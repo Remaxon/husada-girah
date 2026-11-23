@@ -1,0 +1,75 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/entities/PlayerTabib.gd" id="1_tabib"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 18.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interact"]
+radius = 60.0
+
+[node name="PlayerTabib" type="CharacterBody2D"]
+z_index = 5
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_tabib")
+
+[node name="ActiveRing" type="Polygon2D" parent="."]
+color = Color(0.831373, 0.627451, 0.0901961, 0.45)
+polygon = PackedVector2Array(0, -28, 19, -20, 28, 0, 19, 20, 0, 28, -19, 20, -28, 0, -19, -20)
+
+[node name="Shadow" type="Polygon2D" parent="."]
+position = Vector2(0, 14)
+color = Color(0, 0, 0, 0.28)
+polygon = PackedVector2Array(-18, 0, -12, 8, 12, 8, 18, 0, 12, -6, -12, -6)
+
+[node name="BodyVisual" type="Polygon2D" parent="."]
+color = Color(0.227451, 0.490196, 0.266667, 1)
+polygon = PackedVector2Array(-15, -14, 15, -14, 18, 16, -18, 16)
+
+[node name="SashVisual" type="Polygon2D" parent="."]
+color = Color(0.831373, 0.627451, 0.0901961, 1)
+polygon = PackedVector2Array(-14, 2, 14, 2, 15, 7, -15, 7)
+
+[node name="HeadVisual" type="Polygon2D" parent="."]
+position = Vector2(0, -18)
+color = Color(0.94902, 0.858824, 0.72549, 1)
+polygon = PackedVector2Array(-10, -10, 10, -10, 12, 6, -12, 6)
+
+[node name="IketVisual" type="Polygon2D" parent="."]
+position = Vector2(0, -25)
+color = Color(0.290196, 0.180392, 0.105882, 1)
+polygon = PackedVector2Array(-12, -4, 12, -4, 13, 3, -13, 3)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="InteractArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
+shape = SubResource("CircleShape2D_interact")
+
+[node name="NameLabel" type="Label" parent="."]
+offset_left = -64.0
+offset_top = -54.0
+offset_right = 64.0
+offset_bottom = -34.0
+theme_override_colors/font_color = Color(0.98, 0.96, 0.88, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.08, 0.05, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "Tabib Wira"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="."]
+offset_left = -74.0
+offset_top = -72.0
+offset_right = 74.0
+offset_bottom = -52.0
+theme_override_colors/font_outline_color = Color(0.1, 0.07, 0.04, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 11
+text = "[AKTIF — TABIB]"
+horizontal_alignment = 1

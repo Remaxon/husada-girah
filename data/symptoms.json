@@ -1,0 +1,329 @@
+{
+  "schema_version": "1.0",
+  "symptoms": [
+    {
+      "id": "demam_panas",
+      "name": "Demam Membara",
+      "severity": "ringan",
+      "required_tags": ["anti_demam"],
+      "min_stage": 1,
+      "icon_path": "res://assets/icons/symptoms/demam_panas.png",
+      "description": "Tubuh warga terasa sangat panas bagai bara setelah terpapar angin Desa Girah.",
+      "hint_text": "Cari herbal berkhasiat Penurun Panas (anti_demam) seperti Asam Jawa, Akar Alang-Alang, Meniran, atau Sambiloto.",
+      "example_recipes": [
+        {
+          "herbs": ["asam_jawa", "akar_alang_alang"],
+          "note": "Kombinasi penyejuk klasik Stage 1 (Zona Aman) yang sama-sama menurunkan demam."
+        },
+        {
+          "herbs": ["sambiloto", "meniran"],
+          "note": "Sinergi kuat penurun demam sekaligus pemulih imunitas dan detoks."
+        },
+        {
+          "herbs": ["asam_jawa", "kunyit"],
+          "note": "Resep Kunir Asem (Starter Pack): cocok bila Demam Membara disertai Mual atau Radang!"
+        }
+      ]
+    },
+    {
+      "id": "batuk_kabut",
+      "name": "Batuk Kabut & Sesak",
+      "severity": "ringan",
+      "required_tags": ["anti_batuk"],
+      "min_stage": 1,
+      "icon_path": "res://assets/icons/symptoms/batuk_kabut.png",
+      "description": "Batuk kering berkepanjangan dan napas pendek akibat menghirup asap teluh.",
+      "hint_text": "Gunakan herbal Pelega Napas (anti_batuk) seperti Jahe Merah, Daun Sirih, Kencur, Adas, atau Jeruk Nipis.",
+      "example_recipes": [
+        {
+          "herbs": ["jahe_merah", "daun_sirih"],
+          "note": "Tersedia di Starter Pack! Melegakan batuk sekaligus antiseptik jika ada ruam/luka."
+        },
+        {
+          "herbs": ["jahe_merah", "kencur"],
+          "note": "Ramuan penghangat tenggorokan klasik untuk meredakan batuk dan pegal."
+        },
+        {
+          "herbs": ["jeruk_nipis", "adas_manis"],
+          "note": "Meluruhkan dahak sekaligus menambah daya tahan dan menenangkan perut."
+        }
+      ]
+    },
+    {
+      "id": "mual_perut",
+      "name": "Mual & Mulas Wabah",
+      "severity": "ringan",
+      "required_tags": ["pencernaan"],
+      "min_stage": 1,
+      "icon_path": "res://assets/icons/symptoms/mual_perut.png",
+      "description": "Perut melilit, mual hebat, dan diare sehingga tidak mampu menelan makanan.",
+      "hint_text": "Pilih herbal Penenang Perut (pencernaan) seperti Kunyit, Temulawak, Asam Jawa, atau Daun Jambu Biji.",
+      "example_recipes": [
+        {
+          "herbs": ["kunyit", "temulawak"],
+          "note": "Tersedia di Starter Pack! Menenangkan lambung sekaligus membantu detoksifikasi hati."
+        },
+        {
+          "herbs": ["kunyit", "asam_jawa"],
+          "note": "Tersedia di Starter Pack! Cocok untuk mual yang disertai demam atau radang."
+        },
+        {
+          "herbs": ["daun_jambu_biji", "temu_kunci"],
+          "note": "Kaya tanin untuk menghentikan diare dan meredakan perut melilit."
+        }
+      ]
+    },
+    {
+      "id": "luka_ruam",
+      "name": "Ruam & Luka Bernanah",
+      "severity": "ringan",
+      "required_tags": ["antiseptik"],
+      "min_stage": 1,
+      "icon_path": "res://assets/icons/symptoms/luka_ruam.png",
+      "description": "Muncul bintik ruam merah dan borok kulit yang rentan terinfeksi.",
+      "hint_text": "Gunakan herbal Antiseptik Luka (antiseptik) seperti Daun Sirih, Kunyit, Lengkuas, atau Pegagan.",
+      "example_recipes": [
+        {
+          "herbs": ["daun_sirih", "kunyit"],
+          "note": "Tersedia di Starter Pack! Antiseptik ganda alami yang juga meredakan radang kulit."
+        },
+        {
+          "herbs": ["daun_sirih", "jahe_merah"],
+          "note": "Tersedia di Starter Pack! Tepat untuk pasien dengan Ruam Luka + Batuk Kabut."
+        },
+        {
+          "herbs": ["lengkuas", "pegagan"],
+          "note": "Antimikroba kulit sekaligus mempercepat regenerasi jaringan luka."
+        }
+      ]
+    },
+    {
+      "id": "bengkak_sendi",
+      "name": "Radang & Sendi Bengkak",
+      "severity": "ringan",
+      "required_tags": ["anti_radang"],
+      "min_stage": 1,
+      "icon_path": "res://assets/icons/symptoms/bengkak_sendi.png",
+      "description": "Persendian membengkak dan kaku sehingga warga tidak sanggup berjalan.",
+      "hint_text": "Padukan herbal Pereda Radang (anti_radang) seperti Kunyit, Jahe Merah, Daun Sirih, Asam Jawa, atau Lempuyang.",
+      "example_recipes": [
+        {
+          "herbs": ["kunyit", "jahe_merah"],
+          "note": "Tersedia di Starter Pack! Antiinflamasi ganda yang kuat dan menghangatkan sendi."
+        },
+        {
+          "herbs": ["kunyit", "asam_jawa"],
+          "note": "Tersedia di Starter Pack! Meredakan bengkak sekaligus panas tubuh."
+        },
+        {
+          "herbs": ["lempuyang", "daun_salam"],
+          "note": "Racikan klasik jamu cabe puyang untuk radang sendi dan pegal."
+        }
+      ]
+    },
+    {
+      "id": "menggigil_beku",
+      "name": "Menggigil Dingin Teluh",
+      "severity": "menengah",
+      "required_tags": ["sirkulasi"],
+      "min_stage": 1,
+      "icon_path": "res://assets/icons/symptoms/menggigil_beku.png",
+      "description": "Ujung jari membiru dan tubuh menggigil hebat meski di bawah terik matahari.",
+      "hint_text": "Butuh herbal Penghangat Tubuh (sirkulasi) seperti Jahe Merah, Kencur, Kayu Manis, Serai, atau Kayu Secang.",
+      "example_recipes": [
+        {
+          "herbs": ["jahe_merah", "kayu_manis"],
+          "note": "Wedang penghangat peredaran darah yang mengusir dingin menggigil."
+        },
+        {
+          "herbs": ["jahe_merah", "serai_wangi"],
+          "note": "Menghangatkan tubuh sekaligus merelaksasi otot yang tegang."
+        },
+        {
+          "herbs": ["kayu_secang", "lada_hitam"],
+          "note": "Kombinasi wedang uwuh kuat untuk sirkulasi dan stamina."
+        }
+      ]
+    },
+    {
+      "id": "nyeri_kepala",
+      "name": "Nyeri Kepala Menusuk",
+      "severity": "menengah",
+      "required_tags": ["anti_nyeri"],
+      "min_stage": 2,
+      "icon_path": "res://assets/icons/symptoms/nyeri_kepala.png",
+      "description": "Sakit kepala luar biasa dan otot leher menegang bagai dihimpit batu.",
+      "hint_text": "Gunakan herbal Pereda Nyeri (anti_nyeri) seperti Kencur, Serai, Cengkeh, Lempuyang, atau Brotowali.",
+      "example_recipes": [
+        {
+          "herbs": ["kencur", "serai_wangi"],
+          "note": "Pereda nyeri dan relaksan aman tanpa efek samping toksik."
+        },
+        {
+          "herbs": ["lempuyang", "cengkeh"],
+          "note": "Analgesik kuat berbahan eugenol dan zerumbon."
+        },
+        {
+          "herbs": ["biji_kecubung", "temulawak"],
+          "note": "RESEP LANJUTAN: Kecubung meredakan nyeri kuat, sementara Temulawak (detoks) MENETRALKAN racun toksiknya!"
+        }
+      ]
+    },
+    {
+      "id": "lemah_lesu",
+      "name": "Lesu & Kehilangan Daya",
+      "severity": "menengah",
+      "required_tags": ["imunitas"],
+      "min_stage": 1,
+      "icon_path": "res://assets/icons/symptoms/lemah_lesu.png",
+      "description": "Tubuh terkulai lemas, pucat, dan daya tahan menurun drastis.",
+      "hint_text": "Pilih herbal Pemulih Daya (imunitas) seperti Temulawak, Sambiloto, Meniran, Daun Kelor, atau Pasak Bumi.",
+      "example_recipes": [
+        {
+          "herbs": ["temulawak", "sambiloto"],
+          "note": "Memulihkan daya tahan tubuh sekaligus membersihkan racun darah."
+        },
+        {
+          "herbs": ["temulawak", "meniran"],
+          "note": "Tonikum imunomodulator aman untuk memulihkan tenaga warga."
+        },
+        {
+          "herbs": ["daun_kelor", "jeruk_nipis"],
+          "note": "Kaya antioksidan dan vitamin C untuk memulihkan stamina cepat."
+        }
+      ]
+    },
+    {
+      "id": "racun_darah",
+      "name": "Keracunan Bisa Gelap",
+      "severity": "menengah",
+      "required_tags": ["detoks"],
+      "min_stage": 2,
+      "icon_path": "res://assets/icons/symptoms/racun_darah.png",
+      "description": "Nadi berdenyut lemah dengan bercak kehitaman menandakan racun masuk aliran darah.",
+      "hint_text": "Wajib menggunakan herbal Penawar Racun (detoks) seperti Temulawak, Sambiloto, Akar Alang-Alang, atau Brotowali.",
+      "example_recipes": [
+        {
+          "herbs": ["temulawak", "sambiloto"],
+          "note": "Penawar racun ganda yang juga meningkatkan imunitas dan menurunkan demam."
+        },
+        {
+          "herbs": ["temulawak", "akar_alang_alang"],
+          "note": "Aman dari Zona Aman: mendetoks darah sekaligus menyejukkan demam dan gelisah."
+        },
+        {
+          "herbs": ["kumis_kucing", "brotowali"],
+          "note": "Kombinasi detoksifikasi kuat Stage 2 untuk menetralkan bisa teluh."
+        }
+      ]
+    },
+    {
+      "id": "igau_resah",
+      "name": "Igau & Mimpi Buruk",
+      "severity": "menengah",
+      "required_tags": ["penenang"],
+      "min_stage": 2,
+      "icon_path": "res://assets/icons/symptoms/igau_resah.png",
+      "description": "Warga mengigau ketakutan, gelisah, dan dihantui bayangan buruk teluh.",
+      "hint_text": "Cari herbal Penenang Jiwa (penenang) seperti Akar Alang-Alang, Serai, Bunga Melati, Pegagan, atau Kecubung (+ Detoks!).",
+      "example_recipes": [
+        {
+          "herbs": ["akar_alang_alang", "serai_wangi"],
+          "note": "Penenang alami yang aman dari Zona Aman Stage 1."
+        },
+        {
+          "herbs": ["bunga_melati", "pegagan"],
+          "note": "Aromaterapi penenang saraf dan jiwa yang juga baik untuk ruam."
+        },
+        {
+          "herbs": ["biji_kecubung", "sambiloto"],
+          "note": "RESEP LANJUTAN: Sambiloto (detoks) menetralkan tag toksik Kecubung sehingga aman mengobati Igau + Demam + Racun!"
+        }
+      ]
+    },
+    {
+      "id": "kutukan_kabut",
+      "name": "Belenggu Kabut Teluh",
+      "severity": "kutukan",
+      "required_tags": ["detoks", "suci_teluh"],
+      "min_stage": 3,
+      "icon_path": "res://assets/icons/symptoms/kutukan_kabut.png",
+      "description": "Asap hitam melilit tubuh warga; hanya dapat dipatahkan gabungan penawar racun dan herbal sakral.",
+      "hint_text": "Membutuhkan perpaduan Penawar Racun (detoks) dan Penawar Suci (suci_teluh) seperti Daun Bidara, Kayu Cendana, atau Wijaya Kusuma.",
+      "example_recipes": [
+        {
+          "herbs": ["temu_putih", "daun_bidara"],
+          "note": "Temu Putih menyediakan detoks, Daun Bidara menyediakan Penawar Suci + antiseptik."
+        },
+        {
+          "herbs": ["sambiloto", "kayu_cendana"],
+          "note": "Sambiloto mendetoks racun teluh dan Kayu Cendana mematahkan belenggu kutukan."
+        },
+        {
+          "herbs": ["kulit_pule", "bunga_kenanga"],
+          "note": "Perpaduan kulit kayu keramat Usada dan bunga setaman sakral."
+        }
+      ]
+    },
+    {
+      "id": "segel_durga",
+      "name": "Amarah Lipyakara (Boss)",
+      "severity": "boss",
+      "required_tags": ["penenang", "suci_teluh"],
+      "min_stage": 4,
+      "icon_path": "res://assets/icons/symptoms/segel_durga.png",
+      "description": "Aura murka kitab Lipyakara Calon Arang; menuntut penawar suci penenang jiwa dan pemecah teluh.",
+      "hint_text": "Padukan Penenang Jiwa (penenang) dengan Penawar Suci (suci_teluh) untuk meretakkan Perisai Teluh Calon Arang!",
+      "example_recipes": [
+        {
+          "herbs": ["kayu_cendana", "bunga_wijayakusuma"],
+          "note": "Sinergi sakral puncak yang memenuhi penenang, suci_teluh, detoks, antiseptik, dan imunitas."
+        },
+        {
+          "herbs": ["bunga_wijayakusuma", "bunga_melati"],
+          "note": "Tepat untuk Boss Fase 3 (memenuhi suci_teluh, detoks, penenang, dan anti_demam dalam 2 slot!)."
+        },
+        {
+          "herbs": ["daun_bidara", "bunga_kenanga"],
+          "note": "Dua herbal sakral yang keduanya membawa tag penenang dan suci_teluh."
+        }
+      ]
+    }
+  ],
+  "combo_guides": [
+    {
+      "title": "Contoh Pasien Stage 1 — Demam Membara + Mual & Mulas",
+      "required_tags": ["anti_demam", "pencernaan"],
+      "recipes": [
+        "Asam Jawa + Kunyit (Starter Pack — USADA UTAMA!)",
+        "Asam Jawa + Temulawak (Starter Pack — USADA UTAMA!)",
+        "Akar Alang-Alang + Kunyit (Panen Zona Aman)"
+      ]
+    },
+    {
+      "title": "Contoh Pasien Stage 1 — Batuk Kabut + Ruam & Luka",
+      "required_tags": ["anti_batuk", "antiseptik"],
+      "recipes": [
+        "Jahe Merah + Daun Sirih (Starter Pack — USADA UTAMA!)",
+        "Jahe Merah + Kunyit (Starter Pack — USADA UTAMA!)"
+      ]
+    },
+    {
+      "title": "Contoh Multi-Gejala — Demam + Racun Darah + Igau Resah",
+      "required_tags": ["anti_demam", "detoks", "penenang"],
+      "recipes": [
+        "Sambiloto (Zona Berbahaya) + Akar Alang-Alang (Zona Aman) — 100% Aman!",
+        "Sambiloto (Zona Berbahaya) + Kecubung Gunung (Zona Berbahaya) — Toksik Dinetralkan oleh Detoks Sambiloto!",
+        "Asam Jawa + Temulawak + Akar Alang-Alang (3 Bahan Aman)"
+      ]
+    },
+    {
+      "title": "Aturan Penting Bahan TOKSIK (Kecubung Gunung)",
+      "required_tags": ["toksik", "detoks"],
+      "recipes": [
+        "SALAH: Kecubung Gunung + Kunyit (TIDAK ada detoks -> GAGAL TOKSIK! Wabah +5%, Skor -50)",
+        "BENAR: Kecubung Gunung + Temulawak / Sambiloto / Akar Alang-Alang (ADA detoks -> Racun Dinetralkan & Aman!)"
+      ]
+    }
+  ]
+}

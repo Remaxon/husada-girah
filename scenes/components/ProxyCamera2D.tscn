@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/components/ProxyCamera2D.gd" id="1_cam"]
+
+[node name="ProxyCamera2D" type="Camera2D"]
+limit_left = 0
+limit_top = 0
+limit_right = 3200
+limit_bottom = 2200
+limit_smoothed = true
+script = ExtResource("1_cam")

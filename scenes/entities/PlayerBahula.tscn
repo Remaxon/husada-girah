@@ -1,0 +1,95 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/entities/PlayerBahula.gd" id="1_bahula"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 18.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interact"]
+radius = 58.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_attack"]
+size = Vector2(58, 66)
+
+[node name="PlayerBahula" type="CharacterBody2D"]
+z_index = 5
+collision_layer = 8
+collision_mask = 1
+script = ExtResource("1_bahula")
+
+[node name="ActiveRing" type="Polygon2D" parent="."]
+visible = false
+color = Color(0.898039, 0.360784, 0.223529, 0.48)
+polygon = PackedVector2Array(0, -29, 20, -21, 29, 0, 20, 21, 0, 29, -20, 21, -29, 0, -20, -21)
+
+[node name="Shadow" type="Polygon2D" parent="."]
+position = Vector2(0, 14)
+color = Color(0, 0, 0, 0.3)
+polygon = PackedVector2Array(-18, 0, -12, 8, 12, 8, 18, 0, 12, -6, -12, -6)
+
+[node name="BodyVisual" type="Polygon2D" parent="."]
+color = Color(0.690196, 0.227451, 0.180392, 1)
+polygon = PackedVector2Array(-16, -15, 16, -15, 20, 16, -20, 16)
+
+[node name="ArmorTrim" type="Polygon2D" parent="."]
+color = Color(0.831373, 0.627451, 0.0901961, 1)
+polygon = PackedVector2Array(-15, -10, 15, -10, 12, -4, -12, -4)
+
+[node name="HeadVisual" type="Polygon2D" parent="."]
+position = Vector2(0, -18)
+color = Color(0.933333, 0.835294, 0.701961, 1)
+polygon = PackedVector2Array(-10, -10, 10, -10, 12, 6, -12, 6)
+
+[node name="HeadbandVisual" type="Polygon2D" parent="."]
+position = Vector2(0, -25)
+color = Color(0.831373, 0.627451, 0.0901961, 1)
+polygon = PackedVector2Array(-12, -4, 12, -4, 13, 3, -13, 3)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="InteractArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
+shape = SubResource("CircleShape2D_interact")
+
+[node name="AttackPivot" type="Node2D" parent="."]
+
+[node name="AttackArea" type="Area2D" parent="AttackPivot"]
+position = Vector2(36, 0)
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackPivot/AttackArea"]
+shape = SubResource("RectangleShape2D_attack")
+
+[node name="SlashVisual" type="Polygon2D" parent="AttackPivot"]
+visible = false
+z_index = 10
+color = Color(1, 0.878431, 0.321569, 0.9)
+polygon = PackedVector2Array(12, -32, 42, -26, 62, -10, 66, 0, 62, 10, 42, 26, 12, 32, 28, 16, 34, 0, 28, -16)
+
+[node name="NameLabel" type="Label" parent="."]
+offset_left = -64.0
+offset_top = -54.0
+offset_right = 64.0
+offset_bottom = -34.0
+theme_override_colors/font_color = Color(1, 0.92, 0.8, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.05, 0.05, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "Mpu Bahula"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="."]
+offset_left = -78.0
+offset_top = -72.0
+offset_right = 78.0
+offset_bottom = -52.0
+theme_override_colors/font_outline_color = Color(0.1, 0.05, 0.04, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 11
+text = "[SIAP TUGAS (Tab)]"
+horizontal_alignment = 1

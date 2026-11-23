@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/components/QuestPointer.gd" id="1_ptr"]
+
+[node name="QuestPointer" type="Node2D"]
+z_index = 40
+script = ExtResource("1_ptr")
+
+[node name="ArrowPivot" type="Node2D" parent="."]
+
+[node name="ArrowOutline" type="Polygon2D" parent="ArrowPivot"]
+color = Color(0.12, 0.08, 0.04, 0.9)
+polygon = PackedVector2Array(17, 0, -10, -13, -5, 0, -10, 13)
+
+[node name="ArrowPoly" type="Polygon2D" parent="ArrowPivot"]
+color = Color(0.98, 0.82, 0.22, 0.95)
+polygon = PackedVector2Array(14, 0, -8, -10, -4, 0, -8, 10)
+
+[node name="TargetLabel" type="Label" parent="."]
+offset_left = -78.0
+offset_top = 12.0
+offset_right = 78.0
+offset_bottom = 32.0
+theme_override_colors/font_outline_color = Color(0.08, 0.05, 0.03, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 11
+text = "Target"
+horizontal_alignment = 1
