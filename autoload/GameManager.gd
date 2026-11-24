@@ -10,30 +10,37 @@ enum ActiveCharacter {
 const PERMANENT_LONTAR_ID: String = "buku_lontar_usada"
 const MAX_READY_POTIONS: int = 3
 
+## Batas Zona Aman Stage 1: Desa Pinggiran (y >= 2700) + Koridor Jalan Setapak Utama (x = 1516..1684)
+const SAFE_VILLAGE_MIN_Y: float = 2700.0
+const SAFE_CORRIDOR_MIN_X: float = 1516.0
+const SAFE_CORRIDOR_MAX_X: float = 1684.0
+
+## Starter Pack Stage 1: tepat 2 dosis ramuan Kunir Asem (Kunyit + Asam Jawa) untuk menyembuhkan
+## Pasien #1 Pak Kartono (Demam Membara + Mual & Mulas) + 1 dosis cadangan bila gagal meracik.
 const STARTER_HERBS: Dictionary = {
-	"kunyit": 3,
-	"jahe_merah": 3,
+	"kunyit": 2,
 	"asam_jawa": 2,
-	"daun_sirih": 2,
-	"temulawak": 2,
 }
 
 var current_stage: int = 1
 var active_character: int = ActiveCharacter.TABIB
 var is_switching_camera: bool = false
+var tabib_node: Node2D = null
+var bahula_node: Node2D = null
 
-## Item permanen & Kantong Herbal Bersama
+## Item permanen, Inventori Tabib (Kuali), & Kantong Ekspedisi Mpu Bahula
 var has_lontar_usada: bool = true
 var has_portable_cauldron: bool = true
 var herbal_inventory: Dictionary = {}
+var bahula_expedition_pouch: Dictionary = {}
 var discovered_herbs: Dictionary = {}
 var ready_potions: Array = []
 var selected_potion_index: int = 0
 var _next_potion_uid: int = 1
 
-## Wabah Meter & jeda waktu
+## Wabah Meter & jeda waktu (Stage 1 diperlambat 35%: 0.25 * 0.65 = 0.1625%/detik)
 var plague_meter: float = 10.0
-var plague_rate_per_sec: float = 0.25
+var plague_rate_per_sec: float = 0.1625
 var plague_rate_multiplier: float = 1.0
 var plague_pause_sources: Array[String] = []
 var plague_slow_sources: Dictionary = {}
@@ -106,6 +113,7 @@ func reset_for_stage(stage_number: int, initial_plague: float, plague_rate: floa
 	bahula_retreat_cooldown = 0.0
 	bahula_retreat_count = 0
 	unbanked_danger_herbs.clear()
+	bahula_expedition_pouch.clear()
 
 	ready_potions.clear()
 	selected_potion_index = 0
@@ -116,10 +124,36 @@ func reset_for_stage(stage_number: int, initial_plague: float, plague_rate: floa
 
 	EventBus.active_character_changed.emit(active_character)
 	EventBus.herb_inventory_changed.emit()
+	EventBus.bahula_pouch_changed.emit(0, bahula_expedition_pouch)
 	EventBus.ready_potions_changed.emit()
 	EventBus.plague_meter_updated.emit(plague_meter, is_plague_paused())
 	EventBus.bahula_hp_changed.emit(bahula_hp, bahula_max_hp)
 	EventBus.patient_cured.emit("", cured_patients, total_patients)
+
+
+func register_players(tabib: Node2D, bahula: Node2D) -> void:
+	tabib_node = tabib
+	bahula_node = bahula
+
+
+func get_active_player_position() -> Vector2:
+	if active_character == ActiveCharacter.BAHULA and bahula_node != null and is_instance_valid(bahula_node):
+		return bahula_node.global_position
+	if tabib_node != null and is_instance_valid(tabib_node):
+		return tabib_node.global_position
+	return Vector2.ZERO
+
+
+func is_position_in_village(world_pos: Vector2) -> bool:
+	return world_pos.y >= SAFE_VILLAGE_MIN_Y
+
+
+func is_position_in_safe_corridor(world_pos: Vector2) -> bool:
+	return world_pos.x >= SAFE_CORRIDOR_MIN_X and world_pos.x <= SAFE_CORRIDOR_MAX_X
+
+
+func is_position_in_safe_zone(world_pos: Vector2) -> bool:
+	return is_position_in_village(world_pos) or is_position_in_safe_corridor(world_pos)
 
 
 func _init_starter_inventory() -> void:
@@ -240,6 +274,57 @@ func consume_herbs(herb_ids: Array) -> bool:
 
 func clear_unbanked_danger_herbs() -> void:
 	unbanked_danger_herbs.clear()
+
+
+## --- Kantong Ekspedisi Mpu Bahula ---
+
+func add_herb_to_bahula_pouch(herb_id: String, amount: int = 1) -> bool:
+	if amount <= 0:
+		return false
+	var current_count: int = int(bahula_expedition_pouch.get(herb_id, 0))
+	bahula_expedition_pouch[herb_id] = current_count + amount
+	var is_first_discovery: bool = not discovered_herbs.has(herb_id)
+	if is_first_discovery:
+		discovered_herbs[herb_id] = true
+		ScoreManager.record_new_herb_discovery(herb_id)
+	EventBus.herb_collected.emit(herb_id, amount, is_first_discovery)
+	EventBus.bahula_pouch_changed.emit(get_bahula_pouch_total(), bahula_expedition_pouch)
+	return is_first_discovery
+
+
+func get_bahula_pouch_total() -> int:
+	var total: int = 0
+	for hid in bahula_expedition_pouch.keys():
+		total += int(bahula_expedition_pouch[hid])
+	return total
+
+
+func transfer_bahula_pouch_to_tabib() -> int:
+	var total_moved: int = get_bahula_pouch_total()
+	if total_moved <= 0:
+		return 0
+
+	var summary_parts: PackedStringArray = PackedStringArray()
+	for raw_id in bahula_expedition_pouch.keys():
+		var hid: String = String(raw_id)
+		var cnt: int = int(bahula_expedition_pouch[hid])
+		if cnt <= 0:
+			continue
+		herbal_inventory[hid] = int(herbal_inventory.get(hid, 0)) + cnt
+		summary_parts.append("%s x%d" % [AlchemyDatabase.get_herb_name(hid), cnt])
+
+	bahula_expedition_pouch.clear()
+	var summary_text: String = ", ".join(summary_parts)
+
+	EventBus.bahula_pouch_changed.emit(0, bahula_expedition_pouch)
+	EventBus.herb_inventory_changed.emit()
+	EventBus.bahula_pouch_transferred.emit(total_moved, summary_text)
+	EventBus.feedback_requested.emit(
+		"GOOD",
+		"KANTONG BAHULA DISETOR (+%d BAHAN)!" % total_moved,
+		"Mpu Bahula menyerahkan %s ke inventori/Kuali Tabib Wira. Tekan [R] untuk meracik!" % summary_text
+	)
+	return total_moved
 
 
 ## --- Slot Ramuan Siap Pakai ---
@@ -376,7 +461,7 @@ func record_patient_cured(patient_id: String, original_symptom_count: int, eval_
 		EventBus.feedback_requested.emit(
 			"PERFECT",
 			"SEMUA WARGA DESA GIRAH TELAH SEMBUH! (%d/%d)" % [cured_patients, total_patients],
-			"Kabut teluh mereda dan Gerbang Jalan Utara menuju Stage 2 (Hutan Bambu & Sendang Girah) kini TERBUKA bercahaya hijau! Ikuti panah hijau menuju Gerbang Utara."
+			"Gerbang Jalan Utara menuju Stage 2 (Hutan Bambu & Sendang Girah) kini TERBUKA bercahaya hijau! Susuri jalan setapak utama ke utara menuju Gerbang Stage 2."
 		)
 
 
@@ -413,8 +498,6 @@ func request_switch_character() -> bool:
 func complete_switch_character(target_character: int) -> void:
 	active_character = target_character
 	is_switching_camera = false
-	if active_character == ActiveCharacter.TABIB:
-		clear_unbanked_danger_herbs()
 	EventBus.active_character_changed.emit(active_character)
 	EventBus.camera_switch_finished.emit(active_character)
 
@@ -443,12 +526,16 @@ func _trigger_bahula_retreat() -> void:
 	bahula_hp = int(bahula_max_hp * 0.5)
 
 	var lost_note: String = ""
-	if not unbanked_danger_herbs.is_empty():
-		var lost_herb_id: String = unbanked_danger_herbs.pop_back()
-		if get_herb_count(lost_herb_id) > 0:
-			herbal_inventory[lost_herb_id] = get_herb_count(lost_herb_id) - 1
-			EventBus.herb_inventory_changed.emit()
-			lost_note = " 1x %s terjatuh saat mundur." % AlchemyDatabase.get_herb_name(lost_herb_id)
+	if get_bahula_pouch_total() > 0:
+		var pouch_keys: Array = bahula_expedition_pouch.keys()
+		var lost_id: String = String(pouch_keys[pouch_keys.size() - 1])
+		var new_cnt: int = int(bahula_expedition_pouch[lost_id]) - 1
+		if new_cnt <= 0:
+			bahula_expedition_pouch.erase(lost_id)
+		else:
+			bahula_expedition_pouch[lost_id] = new_cnt
+		EventBus.bahula_pouch_changed.emit(get_bahula_pouch_total(), bahula_expedition_pouch)
+		lost_note = " 1x %s terjatuh dari Kantong Bahula saat mundur." % AlchemyDatabase.get_herb_name(lost_id)
 	unbanked_danger_herbs.clear()
 
 	add_plague(12.0)
@@ -457,7 +544,7 @@ func _trigger_bahula_retreat() -> void:
 	EventBus.feedback_requested.emit(
 		"TOXIC",
 		"MUNDUR DARURAT (TACTICAL RETREAT)",
-		"HP Mpu Bahula habis! Mpu Bahula mundur ke Posko untuk pulih (cooldown 5 dtk, Wabah +12%%).%s" % lost_note
+		"HP Mpu Bahula habis akibat serangan hewan buas! Mpu Bahula mundur ke Zona Aman (cooldown 5 dtk, Wabah +12%%).%s" % lost_note
 	)
 
 

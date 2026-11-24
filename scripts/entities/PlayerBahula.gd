@@ -1,26 +1,27 @@
 extends CharacterBody2D
-## PlayerBahula — Mpu Bahula (Karakter Pendamping & Lini Serang / Combat).
-## Perilaku Follow-Then-Dispatch:
-## - Saat Tabib Wira aktif: otomatis mengikuti di belakang Tabib (~70 px), tidak mendorong Tabib,
-##   berhenti sopan sebelum garis Batas Kabut Teluh, dan melintasi jembatan sungai dengan cerdas.
-## - Saat tekan Tab: dikendalikan langsung menembus Zona Berbahaya, menebas (Spasi), Dash (Shift), dan panen (E).
-## - Saat tekan Tab kembali ke Tabib: otomatis menyusul kembali ke belakang Tabib.
+## PlayerBahula — Mpu Bahula (Karakter Pendamping, Pemetik Herbal Hutan & Lini Serang).
+## - Saat Tabib aktif: mengikuti Tabib (~70 px), berhenti sebelum batas hutan.
+## - Saat tekan Tab: dikendalikan menembus hutan 4x luas, tahan Shift untuk Sprint 1.5x,
+##   Spasi menebas hewan buas, Klik Kanan Dash, dan E memetik herbal ke Kantong Bahula.
+## - Begitu kembali ke Zona Aman atau mendekati Tabib, Kantong Bahula otomatis disetor ke Tabib!
 
 @export var move_speed: float = 275.0
+@export var sprint_multiplier: float = 1.5
 @export var dash_speed: float = 660.0
 @export var dash_duration: float = 0.18
 @export var dash_cooldown: float = 1.2
 @export var attack_damage: int = 18
 @export var attack_cooldown: float = 0.35
-@export var safe_zone_y_threshold: float = 715.0
+@export var safe_zone_y_threshold: float = 2728.0
 @export var follow_distance: float = 70.0
-@export var follow_speed: float = 265.0
-@export var catchup_speed: float = 365.0
-@export var fog_stop_y: float = 728.0
-@export var river_x_left: float = 2445.0
-@export var river_x_right: float = 2645.0
-@export var bridge_north_y: float = 1040.0
-@export var bridge_south_y: float = 1660.0
+@export var follow_speed: float = 285.0
+@export var catchup_speed: float = 460.0
+@export var fog_stop_y: float = 2746.0
+@export var river_x_left: float = 2385.0
+@export var river_x_right: float = 2585.0
+@export var river_min_y: float = 1260.0
+@export var bridge_north_y: float = 1560.0
+@export var bridge_south_y: float = 2090.0
 
 @onready var body_visual: Polygon2D = $BodyVisual
 @onready var active_ring: Polygon2D = $ActiveRing
@@ -33,7 +34,7 @@ extends CharacterBody2D
 var tabib_ref: Node2D = null
 var home_position: Vector2 = Vector2.ZERO
 var facing_dir: Vector2 = Vector2.UP
-var fog_cleared: bool = false
+var is_sprinting: bool = false
 
 var _dash_timer: float = 0.0
 var _dash_cd_timer: float = 0.0
@@ -62,13 +63,12 @@ func _ready() -> void:
 	EventBus.active_character_changed.connect(_on_active_character_changed)
 	EventBus.bahula_retreated.connect(_on_bahula_retreated)
 	EventBus.bahula_retreat_cooldown_updated.connect(_on_retreat_cd_updated)
-	EventBus.all_patients_cured.connect(_on_all_patients_cured)
 	_refresh_visual_state()
 
 
 func setup_companion(tabib: Node2D, barrier_y: float) -> void:
 	tabib_ref = tabib
-	safe_zone_y_threshold = barrier_y + 32.0
+	safe_zone_y_threshold = barrier_y + 28.0
 	fog_stop_y = barrier_y + 46.0
 
 
@@ -91,15 +91,26 @@ func _physics_process(delta: float) -> void:
 	elif body_visual != null:
 		body_visual.modulate.a = 1.0
 
-	# Pemulihan HP pelan & setor otomatis ketika Mpu Bahula berada di Zona Aman
-	if global_position.y >= safe_zone_y_threshold:
-		if not GameManager.unbanked_danger_herbs.is_empty():
-			GameManager.clear_unbanked_danger_herbs()
-		if GameManager.bahula_hp < GameManager.bahula_max_hp:
-			_safe_regen_accum += delta
-			if _safe_regen_accum >= 0.5:
-				_safe_regen_accum = 0.0
-				GameManager.heal_bahula(6)
+	# Zona Aman = Desa Pinggiran ATAU Koridor Jalan Setapak Utama
+	var in_village: bool = GameManager.is_position_in_village(global_position)
+	var in_safe_zone: bool = GameManager.is_position_in_safe_zone(global_position)
+	var near_tabib: bool = (
+		tabib_ref != null
+		and is_instance_valid(tabib_ref)
+		and global_position.distance_to(tabib_ref.global_position) <= 155.0
+	)
+	# Transfer otomatis Kantong Ekspedisi Bahula begitu masuk Desa atau mendekati Tabib Wira (termasuk di jalan setapak)
+	if (in_village or near_tabib) and GameManager.get_bahula_pouch_total() > 0:
+		var moved: int = GameManager.transfer_bahula_pouch_to_tabib()
+		if moved > 0:
+			_spawn_floating_text("+%d Bahan Disetor!" % moved, Color(0.55, 1.0, 0.65))
+
+	# Pemulihan HP pelan ketika Mpu Bahula berada di Zona Aman (Desa atau Jalan Setapak Utama)
+	if in_safe_zone and GameManager.bahula_hp < GameManager.bahula_max_hp:
+		_safe_regen_accum += delta
+		if _safe_regen_accum >= 0.5:
+			_safe_regen_accum = 0.0
+			GameManager.heal_bahula(6)
 
 	if _is_controlled():
 		_process_player_control(delta)
@@ -111,10 +122,16 @@ func _physics_process(delta: float) -> void:
 
 func _process_player_control(delta: float) -> void:
 	var input_vec: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	if input_vec.length_squared() > 0.01:
+	var moving: bool = input_vec.length_squared() > 0.01
+	if moving:
 		facing_dir = input_vec.normalized()
 		if attack_pivot != null:
 			attack_pivot.rotation = facing_dir.angle()
+
+	var now_sprint: bool = moving and _dash_timer <= 0.0 and Input.is_action_pressed("sprint")
+	if now_sprint != is_sprinting:
+		is_sprinting = now_sprint
+		_refresh_visual_state()
 
 	if _dash_timer > 0.0:
 		_dash_timer = maxf(0.0, _dash_timer - delta)
@@ -123,7 +140,8 @@ func _process_player_control(delta: float) -> void:
 			body_visual.color = _base_body_color
 	else:
 		_knockback_vel = _knockback_vel.move_toward(Vector2.ZERO, 900.0 * delta)
-		velocity = input_vec * move_speed + _knockback_vel
+		var eff_speed: float = move_speed * (sprint_multiplier if is_sprinting else 1.0)
+		velocity = input_vec * eff_speed + _knockback_vel
 
 	move_and_slide()
 	_update_nearest_interactable()
@@ -146,27 +164,37 @@ func _process_follow_companion(delta: float) -> void:
 			behind_dir = -d.normalized()
 
 	var desired_pos: Vector2 = tabib_pos + behind_dir * follow_distance
+	var corr_min_x: float = GameManager.SAFE_CORRIDOR_MIN_X + 26.0
+	var corr_max_x: float = GameManager.SAFE_CORRIDOR_MAX_X - 26.0
 
-	# Berhenti otomatis sebelum Batas Kabut Teluh jika Mpu Bahula sudah di Zona Aman
-	if not fog_cleared and global_position.y >= fog_stop_y - 4.0:
-		desired_pos.y = maxf(desired_pos.y, fog_stop_y)
+	# Jaga agar Mpu Bahula tetap di dalam Zona Aman (Desa / Koridor Jalan Setapak) saat mengikuti Tabib
+	if tabib_pos.y < GameManager.SAFE_VILLAGE_MIN_Y:
+		# Tabib sedang berjalan di koridor jalan setapak utama -> Bahula ikut sepanjang koridor
+		desired_pos.x = clampf(desired_pos.x, corr_min_x, corr_max_x)
+	elif global_position.y >= fog_stop_y - 4.0:
+		# Tabib di Desa di luar jalur tengah -> Bahula berhenti sopan sebelum batas hutan
+		if desired_pos.x < corr_min_x or desired_pos.x > corr_max_x:
+			desired_pos.y = maxf(desired_pos.y, fog_stop_y)
 
 	var dist_to_tabib: float = global_position.distance_to(tabib_pos)
 	var dist_to_desired: float = global_position.distance_to(desired_pos)
 
-	# Jika terlalu rapat dengan Tabib (< 44 px), bergeser lembut ke belakang agar tidak berdempetan
 	if dist_to_tabib < 44.0:
 		var away: Vector2 = (global_position - tabib_pos).normalized()
 		if away.length_squared() < 0.01:
 			away = behind_dir
-		if not fog_cleared and global_position.y <= fog_stop_y + 4.0 and away.y < 0.0:
+		if tabib_pos.y < GameManager.SAFE_VILLAGE_MIN_Y:
+			away.x = 0.0
+			if absf(away.y) < 0.2:
+				away.y = 1.0
+			away = away.normalized()
+		elif global_position.y <= fog_stop_y + 4.0 and (global_position.x < corr_min_x or global_position.x > corr_max_x) and away.y < 0.0:
 			away.y = 0.25
 			away = away.normalized()
-		velocity = away * 135.0
+		velocity = away * 145.0
 		move_and_slide()
 		return
 
-	# Histeresis jarak nyaman ~70 px agar tidak bergetar
 	if not _is_moving_follow:
 		if dist_to_tabib > follow_distance + 14.0 or (dist_to_desired > 28.0 and dist_to_tabib > follow_distance - 4.0):
 			_is_moving_follow = true
@@ -180,7 +208,6 @@ func _process_follow_companion(delta: float) -> void:
 		_update_follow_label(false)
 		return
 
-	# Navigasi cerdas melewati jembatan kayu jika terpisah aliran sungai timur
 	var nav_target: Vector2 = _resolve_bridge_waypoint(desired_pos)
 	var to_target: Vector2 = nav_target - global_position
 	var dist_nav: float = to_target.length()
@@ -191,7 +218,6 @@ func _process_follow_companion(delta: float) -> void:
 
 	var move_dir: Vector2 = to_target / dist_nav
 
-	# Anti-nyangkut ringan di sudut rumah desa
 	if global_position.distance_to(_last_follow_pos) < 12.0 * delta:
 		_stuck_timer += delta
 		if _stuck_timer > 0.35:
@@ -204,43 +230,39 @@ func _process_follow_companion(delta: float) -> void:
 		_stuck_timer = 0.0
 	_last_follow_pos = global_position
 
-	var speed: float = catchup_speed if dist_to_tabib > 240.0 else follow_speed
+	var tabib_sprinting: bool = ("is_sprinting" in tabib_ref and bool(tabib_ref.is_sprinting))
+	var base_follow: float = follow_speed * 1.4 if tabib_sprinting else follow_speed
+	var speed: float = catchup_speed if dist_to_tabib > 240.0 else base_follow
 	if dist_nav < 50.0:
-		speed = lerpf(110.0, follow_speed, dist_nav / 50.0)
+		speed = lerpf(115.0, base_follow, dist_nav / 50.0)
 
 	velocity = move_dir * speed
-	# Pastikan Bahula tidak melintasi Batas Kabut saat mengikuti Tabib dari sisi Zona Aman
-	if not fog_cleared and global_position.y >= fog_stop_y - 2.0 and velocity.y < 0.0 and global_position.y + velocity.y * delta < fog_stop_y:
-		velocity.y = 0.0
+	if tabib_pos.y >= GameManager.SAFE_VILLAGE_MIN_Y and (global_position.x < corr_min_x or global_position.x > corr_max_x):
+		if global_position.y >= fog_stop_y - 2.0 and velocity.y < 0.0 and global_position.y + velocity.y * delta < fog_stop_y:
+			velocity.y = 0.0
 
 	facing_dir = move_dir
 	if attack_pivot != null:
 		attack_pivot.rotation = facing_dir.angle()
 
 	move_and_slide()
-	_update_follow_label(dist_to_tabib > 150.0)
+	_update_follow_label(dist_to_tabib > 160.0)
 
 
 func _resolve_bridge_waypoint(target_pos: Vector2) -> Vector2:
-	# Hanya diperlukan saat keduanya berada di zona sungai (selatan Batas Kabut)
-	if global_position.y < safe_zone_y_threshold or target_pos.y < safe_zone_y_threshold:
+	# Bantu Mpu Bahula menyeberangi jembatan sungai hutan saat menyusul kembali ke desa
+	if global_position.y < river_min_y or global_position.y >= safe_zone_y_threshold:
 		return target_pos
 
-	var my_west: bool = global_position.x < river_x_left
 	var my_east: bool = global_position.x > river_x_right
 	var tgt_west: bool = target_pos.x < river_x_left
-	var tgt_east: bool = target_pos.x > river_x_right
-
-	if (my_west and tgt_east) or (my_east and tgt_west):
-		var d_north: float = absf(global_position.y - bridge_north_y) + absf(target_pos.y - bridge_north_y)
-		var d_south: float = absf(global_position.y - bridge_south_y) + absf(target_pos.y - bridge_south_y)
-		var bridge_y: float = bridge_north_y if d_north <= d_south else bridge_south_y
-		if absf(global_position.y - bridge_y) > 36.0:
-			var approach_x: float = river_x_left - 24.0 if my_west else river_x_right + 24.0
-			return Vector2(approach_x, bridge_y)
-		else:
-			var exit_x: float = river_x_right + 30.0 if my_west else river_x_left - 30.0
-			return Vector2(exit_x, bridge_y)
+	if my_east and tgt_west:
+		var d_north: float = absf(global_position.y - bridge_north_y)
+		var d_south: float = absf(global_position.y - bridge_south_y)
+		var bridge_y: float = bridge_north_y if d_north < d_south else bridge_south_y
+		if absf(global_position.y - bridge_y) > 40.0:
+			return Vector2(river_x_right + 28.0, bridge_y)
+		return Vector2(river_x_left - 34.0, bridge_y)
 
 	return target_pos
 
@@ -250,8 +272,13 @@ func _update_follow_label(is_catching_up: bool) -> void:
 		return
 	if GameManager.bahula_retreat_cooldown > 0.0:
 		return
-	status_label.text = "[MENYUSUL TABIB]" if is_catching_up else "[MENGIKUTI • Tab]"
-	status_label.modulate = Color(0.95, 0.85, 0.62)
+	var pouch_cnt: int = GameManager.get_bahula_pouch_total()
+	if pouch_cnt > 0:
+		status_label.text = "[MENYETOR %d BAHAN]" % pouch_cnt
+		status_label.modulate = Color(0.65, 1.0, 0.72)
+	else:
+		status_label.text = "[MENYUSUL TABIB]" if is_catching_up else "[MENGIKUTI • Tab]"
+		status_label.modulate = Color(0.95, 0.85, 0.62)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -343,10 +370,15 @@ func take_damage(amount: int, from_pos: Vector2) -> void:
 
 func _on_bahula_retreated(_cooldown_sec: float) -> void:
 	_dash_timer = 0.0
+	is_sprinting = false
 	_knockback_vel = Vector2.ZERO
 	if tabib_ref != null and is_instance_valid(tabib_ref):
-		var safe_retreat: Vector2 = tabib_ref.global_position + Vector2(-64.0, 24.0)
-		safe_retreat.y = maxf(safe_retreat.y, fog_stop_y + 12.0)
+		var safe_retreat: Vector2 = tabib_ref.global_position + Vector2(0.0, 56.0)
+		if tabib_ref.global_position.y < GameManager.SAFE_VILLAGE_MIN_Y:
+			safe_retreat.x = clampf(tabib_ref.global_position.x, GameManager.SAFE_CORRIDOR_MIN_X + 28.0, GameManager.SAFE_CORRIDOR_MAX_X - 28.0)
+		else:
+			safe_retreat = tabib_ref.global_position + Vector2(-64.0, 24.0)
+			safe_retreat.y = maxf(safe_retreat.y, fog_stop_y + 12.0)
 		global_position = safe_retreat
 	else:
 		global_position = home_position
@@ -360,11 +392,8 @@ func _on_retreat_cd_updated(_remaining: float) -> void:
 	_refresh_visual_state()
 
 
-func _on_all_patients_cured() -> void:
-	fog_cleared = true
-
-
 func _on_active_character_changed(_character_id: int) -> void:
+	is_sprinting = false
 	_refresh_visual_state()
 	if GameManager.active_character != GameManager.ActiveCharacter.BAHULA:
 		_current_target = null
@@ -376,13 +405,14 @@ func _refresh_visual_state() -> void:
 	var is_active: bool = GameManager.active_character == GameManager.ActiveCharacter.BAHULA
 	if active_ring != null:
 		active_ring.visible = is_active
+		active_ring.color = Color(1.0, 0.78, 0.24, 0.74) if (is_active and is_sprinting) else Color(0.9, 0.36, 0.22, 0.48)
 	if status_label != null:
 		if GameManager.bahula_retreat_cooldown > 0.0:
 			status_label.text = "[PULIH %.0f dtk]" % ceilf(GameManager.bahula_retreat_cooldown)
 			status_label.modulate = Color(1.0, 0.55, 0.45)
 		elif is_active:
-			status_label.text = "[AKTIF — TEMPUR]"
-			status_label.modulate = Color(1.0, 0.85, 0.45)
+			status_label.text = "[SPRINT 1.5x — BAHULA]" if is_sprinting else "[AKTIF — TEMPUR]"
+			status_label.modulate = Color(1.0, 0.94, 0.45) if is_sprinting else Color(1.0, 0.85, 0.45)
 		else:
 			status_label.text = "[MENGIKUTI • Tab]"
 			status_label.modulate = Color(0.95, 0.85, 0.62)
@@ -418,11 +448,11 @@ func _spawn_floating_text(text: String, color: Color) -> void:
 	var lbl: Label = Label.new()
 	lbl.text = text
 	lbl.modulate = color
-	lbl.position = Vector2(-28, -52)
+	lbl.position = Vector2(-44, -54)
 	lbl.z_index = 20
 	add_child(lbl)
 	var tw: Tween = create_tween()
 	tw.set_parallel(true)
-	tw.tween_property(lbl, "position:y", lbl.position.y - 28.0, 0.55)
-	tw.tween_property(lbl, "modulate:a", 0.0, 0.55)
+	tw.tween_property(lbl, "position:y", lbl.position.y - 28.0, 0.65)
+	tw.tween_property(lbl, "modulate:a", 0.0, 0.65)
 	tw.chain().tween_callback(lbl.queue_free)

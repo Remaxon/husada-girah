@@ -1,18 +1,19 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=28 format=3]
 
 [ext_resource type="Script" path="res://scripts/stages/Stage01_DesaGirah.gd" id="1_stage"]
 [ext_resource type="PackedScene" path="res://scenes/entities/PlayerTabib.tscn" id="2_tabib"]
 [ext_resource type="PackedScene" path="res://scenes/entities/PlayerBahula.tscn" id="3_bahula"]
 [ext_resource type="PackedScene" path="res://scenes/entities/VillagerPatient.tscn" id="4_villager"]
 [ext_resource type="PackedScene" path="res://scenes/entities/HerbNode.tscn" id="5_herb"]
-[ext_resource type="PackedScene" path="res://scenes/entities/EnemyShadow.tscn" id="6_enemy"]
-[ext_resource type="PackedScene" path="res://scenes/components/NorthGate.tscn" id="7_gate"]
-[ext_resource type="PackedScene" path="res://scenes/components/WoodenSignpost.tscn" id="8_sign"]
-[ext_resource type="PackedScene" path="res://scenes/components/QuestPointer.tscn" id="9_ptr"]
-[ext_resource type="PackedScene" path="res://scenes/components/ProxyCamera2D.tscn" id="10_cam"]
-[ext_resource type="PackedScene" path="res://scenes/ui/GameHUD.tscn" id="11_hud"]
-[ext_resource type="PackedScene" path="res://scenes/ui/AlchemyTableUI.tscn" id="12_alchemy_ui"]
-[ext_resource type="PackedScene" path="res://scenes/ui/LontarUsadaUI.tscn" id="13_lontar_ui"]
+[ext_resource type="PackedScene" path="res://scenes/entities/EnemyBoar.tscn" id="6_boar"]
+[ext_resource type="PackedScene" path="res://scenes/entities/EnemySnake.tscn" id="7_snake"]
+[ext_resource type="PackedScene" path="res://scenes/components/NorthGate.tscn" id="8_gate"]
+[ext_resource type="PackedScene" path="res://scenes/components/WoodenSignpost.tscn" id="9_sign"]
+[ext_resource type="PackedScene" path="res://scenes/components/QuestPointer.tscn" id="10_ptr"]
+[ext_resource type="PackedScene" path="res://scenes/components/ProxyCamera2D.tscn" id="11_cam"]
+[ext_resource type="PackedScene" path="res://scenes/ui/GameHUD.tscn" id="12_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/AlchemyTableUI.tscn" id="13_alchemy_ui"]
+[ext_resource type="PackedScene" path="res://scenes/ui/LontarUsadaUI.tscn" id="14_lontar_ui"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
 size = Vector2(3280, 40)
@@ -21,25 +22,31 @@ size = Vector2(3280, 40)
 size = Vector2(3280, 40)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_left"]
-size = Vector2(40, 2280)
+size = Vector2(40, 4280)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_right"]
-size = Vector2(40, 2280)
+size = Vector2(40, 4280)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_fog"]
-size = Vector2(3200, 36)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_border_h"]
+size = Vector2(1512, 36)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_fog_warn"]
-size = Vector2(3200, 28)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_corridor_v"]
+size = Vector2(32, 2700)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_warn_h"]
+size = Vector2(1512, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_warn_v"]
+size = Vector2(22, 2680)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_river_n"]
-size = Vector2(126, 285)
+size = Vector2(126, 225)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_river_m"]
-size = Vector2(126, 510)
+size = Vector2(126, 420)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_river_s"]
-size = Vector2(126, 485)
+size = Vector2(126, 535)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_house_std"]
 size = Vector2(180, 110)
@@ -53,139 +60,237 @@ script = ExtResource("1_stage")
 [node name="MapVisuals" type="Node2D" parent="."]
 z_index = -10
 
-[node name="DangerForestBg" type="ColorRect" parent="MapVisuals"]
+[node name="ForestBaseBg" type="ColorRect" parent="MapVisuals"]
 offset_right = 3200.0
-offset_bottom = 668.0
-color = Color(0.168627, 0.0862745, 0.223529, 1)
+offset_bottom = 2682.0
+color = Color(0.113725, 0.243137, 0.14902, 1)
 
-[node name="DangerMistWest" type="Polygon2D" parent="MapVisuals"]
-color = Color(0.34, 0.16, 0.43, 0.42)
-polygon = PackedVector2Array(120, 110, 820, 80, 1080, 310, 910, 560, 180, 540)
+[node name="Landmark_ReruntuhanBg" type="ColorRect" parent="MapVisuals"]
+offset_left = 160.0
+offset_top = 240.0
+offset_right = 1280.0
+offset_bottom = 1200.0
+color = Color(0.243137, 0.290196, 0.258824, 0.92)
 
-[node name="DangerMistCenter" type="Polygon2D" parent="MapVisuals"]
-color = Color(0.32, 0.15, 0.4, 0.36)
-polygon = PackedVector2Array(1240, 180, 1980, 170, 2060, 490, 1190, 510)
+[node name="RuinStoneBlock1" type="ColorRect" parent="MapVisuals/Landmark_ReruntuhanBg"]
+layout_mode = 0
+offset_left = 90.0
+offset_top = 80.0
+offset_right = 210.0
+offset_bottom = 140.0
+color = Color(0.42, 0.44, 0.41, 1)
 
-[node name="DangerMistEast" type="Polygon2D" parent="MapVisuals"]
-color = Color(0.35, 0.16, 0.44, 0.44)
-polygon = PackedVector2Array(2160, 95, 3040, 130, 3080, 550, 2240, 570)
+[node name="RuinStoneBlock2" type="ColorRect" parent="MapVisuals/Landmark_ReruntuhanBg"]
+layout_mode = 0
+offset_left = 740.0
+offset_top = 130.0
+offset_right = 880.0
+offset_bottom = 195.0
+color = Color(0.39, 0.41, 0.38, 1)
 
-[node name="NorthStoneRoad" type="ColorRect" parent="MapVisuals"]
-offset_left = 1540.0
-offset_top = 135.0
-offset_right = 1660.0
-offset_bottom = 668.0
-color = Color(0.38, 0.31, 0.41, 0.85)
+[node name="RuinStoneBlock3" type="ColorRect" parent="MapVisuals/Landmark_ReruntuhanBg"]
+layout_mode = 0
+offset_left = 180.0
+offset_top = 560.0
+offset_right = 340.0
+offset_bottom = 620.0
+color = Color(0.41, 0.43, 0.4, 1)
 
-[node name="ForestTreesWest" type="Polygon2D" parent="MapVisuals"]
-color = Color(0.11, 0.16, 0.14, 0.9)
-polygon = PackedVector2Array(60, 60, 260, 40, 320, 180, 190, 260, 50, 210)
-
-[node name="ForestTreesEast" type="Polygon2D" parent="MapVisuals"]
-color = Color(0.11, 0.16, 0.14, 0.9)
-polygon = PackedVector2Array(2860, 50, 3140, 60, 3150, 250, 2940, 270, 2820, 170)
-
-[node name="DangerZoneTitle" type="Label" parent="MapVisuals"]
-offset_left = 200.0
-offset_top = 24.0
-offset_right = 1320.0
-offset_bottom = 58.0
-theme_override_colors/font_color = Color(0.92, 0.78, 1, 0.92)
-theme_override_colors/font_outline_color = Color(0.08, 0.02, 0.12, 1)
+[node name="RuinLabel" type="Label" parent="MapVisuals/Landmark_ReruntuhanBg"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 20.0
+offset_right = 1080.0
+offset_bottom = 56.0
+theme_override_colors/font_color = Color(0.92, 0.96, 0.88, 1)
+theme_override_colors/font_outline_color = Color(0.08, 0.1, 0.08, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 18
-text = "PINGGIRAN HUTAN BERKABUT (ZONA BERBAHAYA — Sambiloto & Kecubung)"
+text = "(c) RERUNTUHAN BATU TUA — Hutan Dalam (Ular Berbisa • Sambiloto, Alang-Alang, Melati)"
 horizontal_alignment = 1
 
-[node name="SafeVillageBg" type="ColorRect" parent="MapVisuals"]
-offset_top = 700.0
-offset_right = 2290.0
-offset_bottom = 2200.0
-color = Color(0.517647, 0.768627, 0.486275, 1)
+[node name="Landmark_SarangBabiBg" type="ColorRect" parent="MapVisuals"]
+offset_left = 1900.0
+offset_top = 240.0
+offset_right = 3040.0
+offset_bottom = 1200.0
+color = Color(0.243137, 0.168627, 0.113725, 0.92)
 
-[node name="RiverbankMoistBg" type="ColorRect" parent="MapVisuals"]
-offset_left = 2290.0
-offset_top = 700.0
-offset_right = 3200.0
-offset_bottom = 2200.0
-color = Color(0.415686, 0.658824, 0.431373, 1)
+[node name="MudPatch1" type="Polygon2D" parent="MapVisuals/Landmark_SarangBabiBg"]
+color = Color(0.36, 0.25, 0.16, 0.85)
+polygon = PackedVector2Array(180, 240, 420, 200, 500, 340, 340, 430, 140, 360)
 
-[node name="RiverWater" type="ColorRect" parent="MapVisuals"]
-offset_left = 2480.0
-offset_top = 700.0
-offset_right = 2610.0
-offset_bottom = 2200.0
+[node name="MudPatch2" type="Polygon2D" parent="MapVisuals/Landmark_SarangBabiBg"]
+color = Color(0.34, 0.23, 0.15, 0.85)
+polygon = PackedVector2Array(680, 380, 960, 340, 1020, 540, 820, 620, 640, 510)
+
+[node name="SarangLabel" type="Label" parent="MapVisuals/Landmark_SarangBabiBg"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = 1110.0
+offset_bottom = 56.0
+theme_override_colors/font_color = Color(1, 0.88, 0.72, 1)
+theme_override_colors/font_outline_color = Color(0.14, 0.07, 0.03, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "(d) SARANG BABI HUTAN — Hutan Dalam (Babi Hutan Liar • Sambiloto, Kecubung [!], Serai)"
+horizontal_alignment = 1
+
+[node name="Landmark_RumpunBambuBg" type="ColorRect" parent="MapVisuals"]
+offset_left = 160.0
+offset_top = 1420.0
+offset_right = 1280.0
+offset_bottom = 2540.0
+color = Color(0.180392, 0.352941, 0.180392, 0.94)
+
+[node name="BambooClump1" type="ColorRect" parent="MapVisuals/Landmark_RumpunBambuBg"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 120.0
+offset_right = 135.0
+offset_bottom = 290.0
+color = Color(0.32, 0.56, 0.25, 0.9)
+
+[node name="BambooClump2" type="ColorRect" parent="MapVisuals/Landmark_RumpunBambuBg"]
+layout_mode = 0
+offset_left = 940.0
+offset_top = 170.0
+offset_right = 1015.0
+offset_bottom = 350.0
+color = Color(0.32, 0.56, 0.25, 0.9)
+
+[node name="BambooClump3" type="ColorRect" parent="MapVisuals/Landmark_RumpunBambuBg"]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 770.0
+offset_right = 190.0
+offset_bottom = 960.0
+color = Color(0.32, 0.56, 0.25, 0.9)
+
+[node name="BambooLabel" type="Label" parent="MapVisuals/Landmark_RumpunBambuBg"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = 1090.0
+offset_bottom = 56.0
+theme_override_colors/font_color = Color(0.86, 1, 0.78, 1)
+theme_override_colors/font_outline_color = Color(0.06, 0.14, 0.05, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "(b) RUMPUN BAMBU LEBAT (Babi Hutan Liar • Jahe Merah, Daun Sirih, Kencur)"
+horizontal_alignment = 1
+
+[node name="Landmark_TepiSungaiBg" type="ColorRect" parent="MapVisuals"]
+offset_left = 1900.0
+offset_top = 1280.0
+offset_right = 3080.0
+offset_bottom = 2660.0
+color = Color(0.172549, 0.368627, 0.286275, 0.94)
+
+[node name="RiverBankLabel" type="Label" parent="MapVisuals/Landmark_TepiSungaiBg"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 18.0
+offset_right = 1160.0
+offset_bottom = 54.0
+theme_override_colors/font_color = Color(0.82, 0.98, 1, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.16, 0.22, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "(a) TEPI SUNGAI & JEMBATAN KAYU (Ular Berbisa • Temulawak, Pegagan, Meniran)"
+horizontal_alignment = 1
+
+[node name="ForestRoadMainNS" type="ColorRect" parent="MapVisuals"]
+offset_left = 1524.0
+offset_top = 150.0
+offset_right = 1676.0
+offset_bottom = 2720.0
+color = Color(0.752941, 0.658824, 0.490196, 0.94)
+
+[node name="CorridorSafePlaque" type="Label" parent="MapVisuals"]
+offset_left = 1730.0
+offset_top = 2595.0
+offset_right = 2190.0
+offset_bottom = 2645.0
+theme_override_colors/font_color = Color(0.86, 1, 0.84, 0.96)
+theme_override_colors/font_outline_color = Color(0.06, 0.14, 0.06, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "← KORIDOR AMAN JALAN UTAMA
+(Tabib aman berjalan hingga Gerbang Stage 2)"
+horizontal_alignment = 0
+
+[node name="ForestRoadNorthEW" type="ColorRect" parent="MapVisuals"]
+offset_left = 360.0
+offset_top = 980.0
+offset_right = 2880.0
+offset_bottom = 1060.0
+color = Color(0.678431, 0.576471, 0.423529, 0.9)
+
+[node name="ForestRoadSouthEW" type="ColorRect" parent="MapVisuals"]
+offset_left = 360.0
+offset_top = 2050.0
+offset_right = 2880.0
+offset_bottom = 2130.0
+color = Color(0.678431, 0.576471, 0.423529, 0.9)
+
+[node name="ForestRoadWestLoop" type="ColorRect" parent="MapVisuals"]
+offset_left = 740.0
+offset_top = 1060.0
+offset_right = 816.0
+offset_bottom = 2050.0
+color = Color(0.678431, 0.576471, 0.423529, 0.88)
+
+[node name="ForestRoadEastLoop" type="ColorRect" parent="MapVisuals"]
+offset_left = 2710.0
+offset_top = 1060.0
+offset_right = 2786.0
+offset_bottom = 2050.0
+color = Color(0.678431, 0.576471, 0.423529, 0.88)
+
+[node name="ForestRoadNorthBridge" type="ColorRect" parent="MapVisuals"]
+offset_left = 2260.0
+offset_top = 1520.0
+offset_right = 2780.0
+offset_bottom = 1600.0
+color = Color(0.678431, 0.576471, 0.423529, 0.9)
+
+[node name="ForestRiverWater" type="ColorRect" parent="MapVisuals"]
+offset_left = 2420.0
+offset_top = 1280.0
+offset_right = 2550.0
+offset_bottom = 2682.0
 color = Color(0.180392, 0.482353, 0.74902, 1)
 
-[node name="RiverShimmer" type="ColorRect" parent="MapVisuals"]
-offset_left = 2524.0
-offset_top = 700.0
-offset_right = 2562.0
-offset_bottom = 2200.0
+[node name="ForestRiverShimmer" type="ColorRect" parent="MapVisuals"]
+offset_left = 2464.0
+offset_top = 1280.0
+offset_right = 2502.0
+offset_bottom = 2682.0
 color = Color(0.380392, 0.67451, 0.909804, 0.7)
 
-[node name="RiverLabel" type="Label" parent="MapVisuals"]
-offset_left = 2625.0
-offset_top = 755.0
-offset_right = 3150.0
-offset_bottom = 805.0
-theme_override_colors/font_color = Color(0.86, 0.98, 1, 1)
-theme_override_colors/font_outline_color = Color(0.08, 0.2, 0.3, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 16
-text = "ALIRAN SUNGAI & TEPI LEMBAP
-(Akar Alang-Alang, Meniran, Temulawak, Pegagan)"
-horizontal_alignment = 1
-
-[node name="MainRoadNS" type="ColorRect" parent="MapVisuals"]
-offset_left = 1540.0
-offset_top = 700.0
-offset_right = 1660.0
-offset_bottom = 2040.0
-color = Color(0.831373, 0.745098, 0.572549, 0.92)
-
-[node name="RoadNorthEW" type="ColorRect" parent="MapVisuals"]
-offset_left = 420.0
-offset_top = 1000.0
-offset_right = 2890.0
-offset_bottom = 1080.0
-color = Color(0.831373, 0.745098, 0.572549, 0.92)
-
-[node name="RoadSouthEW" type="ColorRect" parent="MapVisuals"]
-offset_left = 420.0
-offset_top = 1620.0
-offset_right = 2890.0
-offset_bottom = 1700.0
-color = Color(0.831373, 0.745098, 0.572549, 0.92)
-
-[node name="WestLoopLane" type="ColorRect" parent="MapVisuals"]
-offset_left = 640.0
-offset_top = 1080.0
-offset_right = 716.0
-offset_bottom = 1620.0
-color = Color(0.831373, 0.745098, 0.572549, 0.88)
-
 [node name="BridgeNorth" type="ColorRect" parent="MapVisuals"]
-offset_left = 2445.0
-offset_top = 985.0
-offset_right = 2645.0
-offset_bottom = 1095.0
+offset_left = 2385.0
+offset_top = 1505.0
+offset_right = 2585.0
+offset_bottom = 1615.0
 color = Color(0.560784, 0.364706, 0.184314, 1)
 
-[node name="BridgeNorthRailTop" type="ColorRect" parent="MapVisuals/BridgeNorth"]
+[node name="RailTop" type="ColorRect" parent="MapVisuals/BridgeNorth"]
 layout_mode = 0
 offset_right = 200.0
 offset_bottom = 10.0
 color = Color(0.36, 0.22, 0.1, 1)
 
-[node name="BridgeNorthRailBot" type="ColorRect" parent="MapVisuals/BridgeNorth"]
+[node name="RailBot" type="ColorRect" parent="MapVisuals/BridgeNorth"]
 layout_mode = 0
 offset_top = 100.0
 offset_right = 200.0
 offset_bottom = 110.0
 color = Color(0.36, 0.22, 0.1, 1)
 
-[node name="BridgeNorthLabel" type="Label" parent="MapVisuals/BridgeNorth"]
+[node name="Label" type="Label" parent="MapVisuals/BridgeNorth"]
 layout_mode = 0
 offset_top = 24.0
 offset_right = 200.0
@@ -200,26 +305,26 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="BridgeSouth" type="ColorRect" parent="MapVisuals"]
-offset_left = 2445.0
-offset_top = 1605.0
-offset_right = 2645.0
-offset_bottom = 1715.0
+offset_left = 2385.0
+offset_top = 2035.0
+offset_right = 2585.0
+offset_bottom = 2145.0
 color = Color(0.560784, 0.364706, 0.184314, 1)
 
-[node name="BridgeSouthRailTop" type="ColorRect" parent="MapVisuals/BridgeSouth"]
+[node name="RailTop" type="ColorRect" parent="MapVisuals/BridgeSouth"]
 layout_mode = 0
 offset_right = 200.0
 offset_bottom = 10.0
 color = Color(0.36, 0.22, 0.1, 1)
 
-[node name="BridgeSouthRailBot" type="ColorRect" parent="MapVisuals/BridgeSouth"]
+[node name="RailBot" type="ColorRect" parent="MapVisuals/BridgeSouth"]
 layout_mode = 0
 offset_top = 100.0
 offset_right = 200.0
 offset_bottom = 110.0
 color = Color(0.36, 0.22, 0.1, 1)
 
-[node name="BridgeSouthLabel" type="Label" parent="MapVisuals/BridgeSouth"]
+[node name="Label" type="Label" parent="MapVisuals/BridgeSouth"]
 layout_mode = 0
 offset_top = 24.0
 offset_right = 200.0
@@ -233,51 +338,58 @@ Selatan"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="SafeVillageBg" type="ColorRect" parent="MapVisuals"]
+offset_top = 2718.0
+offset_right = 3200.0
+offset_bottom = 4220.0
+color = Color(0.517647, 0.768627, 0.486275, 1)
+
+[node name="VillageRoadMainNS" type="ColorRect" parent="MapVisuals"]
+offset_left = 1524.0
+offset_top = 2718.0
+offset_right = 1676.0
+offset_bottom = 4060.0
+color = Color(0.831373, 0.745098, 0.572549, 0.94)
+
+[node name="VillageRoadNorthEW" type="ColorRect" parent="MapVisuals"]
+offset_left = 420.0
+offset_top = 3020.0
+offset_right = 2780.0
+offset_bottom = 3100.0
+color = Color(0.831373, 0.745098, 0.572549, 0.92)
+
+[node name="VillageRoadSouthEW" type="ColorRect" parent="MapVisuals"]
+offset_left = 420.0
+offset_top = 3640.0
+offset_right = 2780.0
+offset_bottom = 3720.0
+color = Color(0.831373, 0.745098, 0.572549, 0.92)
+
+[node name="VillageWestLane" type="ColorRect" parent="MapVisuals"]
+offset_left = 640.0
+offset_top = 3100.0
+offset_right = 716.0
+offset_bottom = 3640.0
+color = Color(0.831373, 0.745098, 0.572549, 0.88)
+
 [node name="VillageZoneTitle" type="Label" parent="MapVisuals"]
-offset_left = 680.0
-offset_top = 740.0
-offset_right = 2040.0
-offset_bottom = 778.0
+offset_left = 1750.0
+offset_top = 2775.0
+offset_right = 2350.0
+offset_bottom = 2825.0
 theme_override_colors/font_color = Color(0.12, 0.25, 0.1, 1)
 theme_override_colors/font_outline_color = Color(0.92, 0.98, 0.88, 1)
 theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
-text = "PEMUKIMAN DESA PINGGIRAN GIRAH — KERAJAAN KAHURIPAN (ZONA AMAN)"
-horizontal_alignment = 1
-
-[node name="GardenPatchNW" type="ColorRect" parent="MapVisuals"]
-offset_left = 260.0
-offset_top = 1140.0
-offset_right = 430.0
-offset_bottom = 1360.0
-color = Color(0.42, 0.64, 0.36, 0.85)
-
-[node name="GardenPatchSW" type="ColorRect" parent="MapVisuals"]
-offset_left = 260.0
-offset_top = 1770.0
-offset_right = 430.0
-offset_bottom = 1990.0
-color = Color(0.42, 0.64, 0.36, 0.85)
-
-[node name="GardenPatchCenter" type="ColorRect" parent="MapVisuals"]
-offset_left = 860.0
-offset_top = 1160.0
-offset_right = 1040.0
-offset_bottom = 1330.0
-color = Color(0.42, 0.64, 0.36, 0.85)
-
-[node name="GardenPatchSouth" type="ColorRect" parent="MapVisuals"]
-offset_left = 860.0
-offset_top = 1790.0
-offset_right = 1040.0
-offset_bottom = 1980.0
-color = Color(0.42, 0.64, 0.36, 0.85)
+theme_override_font_sizes/font_size = 15
+text = "ZONA AMAN — DESA PINGGIRAN GIRAH
+(Kuali Portabel [R] • Buku Lontar [L])"
+horizontal_alignment = 0
 
 [node name="House01Visual" type="ColorRect" parent="MapVisuals"]
 offset_left = 440.0
-offset_top = 1130.0
+offset_top = 3150.0
 offset_right = 620.0
-offset_bottom = 1240.0
+offset_bottom = 3260.0
 color = Color(0.46, 0.28, 0.15, 1)
 
 [node name="Roof" type="ColorRect" parent="MapVisuals/House01Visual"]
@@ -294,16 +406,16 @@ offset_right = 180.0
 offset_bottom = 110.0
 theme_override_colors/font_color = Color(1, 0.94, 0.8, 1)
 theme_override_font_sizes/font_size = 13
-text = "Rumah Pak Kartono
+text = "Rumah Mbok Sari
 (Kebun Kunyit ←)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="House02Visual" type="ColorRect" parent="MapVisuals"]
 offset_left = 1140.0
-offset_top = 1120.0
+offset_top = 3140.0
 offset_right = 1320.0
-offset_bottom = 1230.0
+offset_bottom = 3250.0
 color = Color(0.46, 0.28, 0.15, 1)
 
 [node name="Roof" type="ColorRect" parent="MapVisuals/House02Visual"]
@@ -320,16 +432,16 @@ offset_right = 180.0
 offset_bottom = 110.0
 theme_override_colors/font_color = Color(1, 0.94, 0.8, 1)
 theme_override_font_sizes/font_size = 13
-text = "Rumah Mbok Sari
-(Kebun Jahe ←)"
+text = "Rumah Pak Kartono
+(Pasien Awal)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="House03Visual" type="ColorRect" parent="MapVisuals"]
 offset_left = 1860.0
-offset_top = 1130.0
+offset_top = 3150.0
 offset_right = 2040.0
-offset_bottom = 1240.0
+offset_bottom = 3260.0
 color = Color(0.46, 0.28, 0.15, 1)
 
 [node name="Roof" type="ColorRect" parent="MapVisuals/House03Visual"]
@@ -347,15 +459,15 @@ offset_bottom = 110.0
 theme_override_colors/font_color = Color(1, 0.94, 0.8, 1)
 theme_override_font_sizes/font_size = 13
 text = "Rumah Kang Jaka
-(Sirih & Asam Jawa)"
+(Pasien Hutan Dalam)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="House04Visual" type="ColorRect" parent="MapVisuals"]
 offset_left = 440.0
-offset_top = 1760.0
+offset_top = 3780.0
 offset_right = 620.0
-offset_bottom = 1870.0
+offset_bottom = 3890.0
 color = Color(0.46, 0.28, 0.15, 1)
 
 [node name="Roof" type="ColorRect" parent="MapVisuals/House04Visual"]
@@ -372,16 +484,15 @@ offset_right = 180.0
 offset_bottom = 110.0
 theme_override_colors/font_color = Color(1, 0.94, 0.8, 1)
 theme_override_font_sizes/font_size = 13
-text = "Rumah Nyi Warni
-(Kebun Lengkuas ←)"
+text = "Rumah Nyi Warni"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="House05BalaiVisual" type="ColorRect" parent="MapVisuals"]
 offset_left = 1140.0
-offset_top = 1760.0
+offset_top = 3780.0
 offset_right = 1350.0
-offset_bottom = 1880.0
+offset_bottom = 3900.0
 color = Color(0.42, 0.24, 0.12, 1)
 
 [node name="Roof" type="ColorRect" parent="MapVisuals/House05BalaiVisual"]
@@ -399,15 +510,15 @@ offset_bottom = 120.0
 theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
 theme_override_font_sizes/font_size = 14
 text = "Balai Desa Girah
-(Posko Persinggahan)"
+(Posko Tabib Wira)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="House06Visual" type="ColorRect" parent="MapVisuals"]
 offset_left = 1860.0
-offset_top = 1760.0
+offset_top = 3780.0
 offset_right = 2040.0
-offset_bottom = 1870.0
+offset_bottom = 3890.0
 color = Color(0.46, 0.28, 0.15, 1)
 
 [node name="Roof" type="ColorRect" parent="MapVisuals/House06Visual"]
@@ -425,7 +536,7 @@ offset_bottom = 110.0
 theme_override_colors/font_color = Color(1, 0.94, 0.8, 1)
 theme_override_font_sizes/font_size = 13
 text = "Rumah Peramu Jamu
-(Rumpun Serai ↓)"
+(Pohon Asam Jawa ←)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -438,31 +549,31 @@ position = Vector2(1600, -20)
 shape = SubResource("RectangleShape2D_top")
 
 [node name="BottomWall" type="CollisionShape2D" parent="WorldBoundaries"]
-position = Vector2(1600, 2220)
+position = Vector2(1600, 4240)
 shape = SubResource("RectangleShape2D_bottom")
 
 [node name="LeftWall" type="CollisionShape2D" parent="WorldBoundaries"]
-position = Vector2(-20, 1100)
+position = Vector2(-20, 2110)
 shape = SubResource("RectangleShape2D_left")
 
 [node name="RightWall" type="CollisionShape2D" parent="WorldBoundaries"]
-position = Vector2(3220, 1100)
+position = Vector2(3220, 2110)
 shape = SubResource("RectangleShape2D_right")
 
-[node name="RiverCollision" type="StaticBody2D" parent="."]
+[node name="ForestRiverCollision" type="StaticBody2D" parent="."]
 collision_layer = 1
 collision_mask = 0
 
-[node name="RiverNorthSeg" type="CollisionShape2D" parent="RiverCollision"]
-position = Vector2(2545, 842.5)
+[node name="RiverNorthSeg" type="CollisionShape2D" parent="ForestRiverCollision"]
+position = Vector2(2485, 1392.5)
 shape = SubResource("RectangleShape2D_river_n")
 
-[node name="RiverMidSeg" type="CollisionShape2D" parent="RiverCollision"]
-position = Vector2(2545, 1350)
+[node name="RiverMidSeg" type="CollisionShape2D" parent="ForestRiverCollision"]
+position = Vector2(2485, 1825)
 shape = SubResource("RectangleShape2D_river_m")
 
-[node name="RiverSouthSeg" type="CollisionShape2D" parent="RiverCollision"]
-position = Vector2(2545, 1957.5)
+[node name="RiverSouthSeg" type="CollisionShape2D" parent="ForestRiverCollision"]
+position = Vector2(2485, 2412.5)
 shape = SubResource("RectangleShape2D_river_s")
 
 [node name="VillageHousesCollision" type="StaticBody2D" parent="."]
@@ -470,270 +581,384 @@ collision_layer = 1
 collision_mask = 0
 
 [node name="House01Col" type="CollisionShape2D" parent="VillageHousesCollision"]
-position = Vector2(530, 1185)
+position = Vector2(530, 3205)
 shape = SubResource("RectangleShape2D_house_std")
 
 [node name="House02Col" type="CollisionShape2D" parent="VillageHousesCollision"]
-position = Vector2(1230, 1175)
+position = Vector2(1230, 3195)
 shape = SubResource("RectangleShape2D_house_std")
 
 [node name="House03Col" type="CollisionShape2D" parent="VillageHousesCollision"]
-position = Vector2(1950, 1185)
+position = Vector2(1950, 3205)
 shape = SubResource("RectangleShape2D_house_std")
 
 [node name="House04Col" type="CollisionShape2D" parent="VillageHousesCollision"]
-position = Vector2(530, 1815)
+position = Vector2(530, 3835)
 shape = SubResource("RectangleShape2D_house_std")
 
 [node name="House05BalaiCol" type="CollisionShape2D" parent="VillageHousesCollision"]
-position = Vector2(1245, 1820)
+position = Vector2(1245, 3840)
 shape = SubResource("RectangleShape2D_house_balai")
 
 [node name="House06Col" type="CollisionShape2D" parent="VillageHousesCollision"]
-position = Vector2(1950, 1815)
+position = Vector2(1950, 3835)
 shape = SubResource("RectangleShape2D_house_std")
 
 [node name="FogBarrier" type="StaticBody2D" parent="."]
-position = Vector2(1600, 682)
+position = Vector2(1600, 2700)
 collision_layer = 2
 collision_mask = 0
 
-[node name="FogStripOuter" type="ColorRect" parent="FogBarrier"]
+[node name="BorderLeftOuter" type="ColorRect" parent="FogBarrier"]
 offset_left = -1600.0
-offset_top = -22.0
-offset_right = 1600.0
-offset_bottom = 22.0
-color = Color(0.427451, 0.168627, 0.545098, 0.85)
+offset_top = -16.0
+offset_right = -84.0
+offset_bottom = 16.0
+color = Color(0.45, 0.2, 0.14, 0.82)
 
-[node name="FogStripCore" type="ColorRect" parent="FogBarrier"]
+[node name="BorderLeftCore" type="ColorRect" parent="FogBarrier"]
 offset_left = -1600.0
-offset_top = -6.0
-offset_right = 1600.0
-offset_bottom = 6.0
-color = Color(0.690196, 0.34902, 0.831373, 0.9)
+offset_top = -4.0
+offset_right = -84.0
+offset_bottom = 4.0
+color = Color(0.92, 0.44, 0.24, 0.9)
 
-[node name="FogLabel" type="Label" parent="FogBarrier"]
-offset_left = -640.0
-offset_top = -14.0
-offset_right = 640.0
-offset_bottom = 14.0
-theme_override_colors/font_color = Color(1, 0.92, 1, 1)
-theme_override_colors/font_outline_color = Color(0.18, 0.04, 0.25, 1)
+[node name="BorderRightOuter" type="ColorRect" parent="FogBarrier"]
+offset_left = 84.0
+offset_top = -16.0
+offset_right = 1600.0
+offset_bottom = 16.0
+color = Color(0.45, 0.2, 0.14, 0.82)
+
+[node name="BorderRightCore" type="ColorRect" parent="FogBarrier"]
+offset_left = 84.0
+offset_top = -4.0
+offset_right = 1600.0
+offset_bottom = 4.0
+color = Color(0.92, 0.44, 0.24, 0.9)
+
+[node name="CorridorEdgeLeft" type="ColorRect" parent="FogBarrier"]
+offset_left = -92.0
+offset_top = -2700.0
+offset_right = -82.0
+offset_bottom = 4.0
+color = Color(0.86, 0.48, 0.22, 0.85)
+
+[node name="CorridorEdgeRight" type="ColorRect" parent="FogBarrier"]
+offset_left = 82.0
+offset_top = -2700.0
+offset_right = 92.0
+offset_bottom = 4.0
+color = Color(0.86, 0.48, 0.22, 0.85)
+
+[node name="BorderLabelLeft" type="Label" parent="FogBarrier"]
+offset_left = -840.0
+offset_top = -13.0
+offset_right = -300.0
+offset_bottom = 13.0
+theme_override_colors/font_color = Color(1, 0.94, 0.84, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.06, 0.04, 1)
 theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 14
-text = "~~~~~  BATAS KABUT TELUH — Hanya Mpu Bahula Dapat Melintas (Tekan [Tab])  ~~~~~"
+theme_override_font_sizes/font_size = 13
+text = "BATAS HUTAN LIAR (Barat • Khusus Mpu Bahula)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FogBarrier"]
-shape = SubResource("RectangleShape2D_fog")
+[node name="BorderLabelRight" type="Label" parent="FogBarrier"]
+offset_left = 300.0
+offset_top = -13.0
+offset_right = 840.0
+offset_bottom = 13.0
+theme_override_colors/font_color = Color(1, 0.94, 0.84, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.06, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "BATAS HUTAN LIAR (Timur • Khusus Mpu Bahula)"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VillageBorderLeft" type="CollisionShape2D" parent="FogBarrier"]
+position = Vector2(-844, 0)
+shape = SubResource("RectangleShape2D_border_h")
+
+[node name="VillageBorderRight" type="CollisionShape2D" parent="FogBarrier"]
+position = Vector2(844, 0)
+shape = SubResource("RectangleShape2D_border_h")
+
+[node name="CorridorWallLeft" type="CollisionShape2D" parent="FogBarrier"]
+position = Vector2(-100, -1350)
+shape = SubResource("RectangleShape2D_corridor_v")
+
+[node name="CorridorWallRight" type="CollisionShape2D" parent="FogBarrier"]
+position = Vector2(100, -1350)
+shape = SubResource("RectangleShape2D_corridor_v")
 
 [node name="FogWarningZone" type="Area2D" parent="FogBarrier"]
-position = Vector2(0, 28)
 collision_layer = 0
 collision_mask = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FogBarrier/FogWarningZone"]
-shape = SubResource("RectangleShape2D_fog_warn")
+[node name="WarnBorderLeft" type="CollisionShape2D" parent="FogBarrier/FogWarningZone"]
+position = Vector2(-844, 26)
+shape = SubResource("RectangleShape2D_warn_h")
 
-[node name="NorthGate" parent="." instance=ExtResource("7_gate")]
-position = Vector2(1600, 125)
+[node name="WarnBorderRight" type="CollisionShape2D" parent="FogBarrier/FogWarningZone"]
+position = Vector2(844, 26)
+shape = SubResource("RectangleShape2D_warn_h")
+
+[node name="WarnCorridorLeft" type="CollisionShape2D" parent="FogBarrier/FogWarningZone"]
+position = Vector2(-81, -1350)
+shape = SubResource("RectangleShape2D_warn_v")
+
+[node name="WarnCorridorRight" type="CollisionShape2D" parent="FogBarrier/FogWarningZone"]
+position = Vector2(81, -1350)
+shape = SubResource("RectangleShape2D_warn_v")
+
+[node name="NorthGate" parent="." instance=ExtResource("8_gate")]
+position = Vector2(1600, 145)
 
 [node name="Signposts" type="Node2D" parent="."]
 
-[node name="Sign01_PoskoTengah" parent="Signposts" instance=ExtResource("8_sign")]
-position = Vector2(1475, 1580)
-sign_title = "Papan Persimpangan Balai Desa"
-short_label = "↑ Hutan Kabut & Stage 2
-→ Jembatan Sungai
-← Rumah Warga & Kebun"
-detail_text = "UTARA: Hutan Berkabut (Mpu Bahula, Sambiloto, Kecubung & Gerbang Stage 2). TIMUR: Aliran Sungai & 2 Jembatan Kayu (Akar Alang-Alang, Meniran, Temulawak, Pegagan). BARAT: Pemukiman warga & kebun herbal dapur. Tekan [R] kapan saja untuk membuka Kuali Portabel!"
+[node name="Sign01_BalaiDesa" parent="Signposts" instance=ExtResource("9_sign")]
+position = Vector2(1460, 3590)
+sign_title = "Papan Balai Desa Girah"
+short_label = "↑ Jalan Utama ke Stage 2
+← Pak Kartono & Mbok Sari
+Tahan [Shift] untuk Sprint!"
+detail_text = "Starter Pack Anda (Kunyit x2, Asam Jawa x2) cukup untuk 2 dosis obat Pak Kartono di barat laut Balai Desa! Jalan setapak utama ke utara aman bagi Tabib hingga Gerbang Stage 2, sedangkan semak hutan di kiri/kanan khusus Mpu Bahula [Tab]."
 
-[node name="Sign02_PersimpanganUtara" parent="Signposts" instance=ExtResource("8_sign")]
-position = Vector2(1475, 955)
-sign_title = "Papan Perbatasan Utara Desa"
-short_label = "↑ Batas Kabut (Tekan Tab)
-→ Sungai Utara  |  ← Rumah Sari"
-detail_text = "Di utara terdapat Batas Kabut Teluh menuju Pinggiran Hutan Berkabut. Tekan [Tab] untuk mengendalikan Mpu Bahula menerobos kabut, mengalahkan Bayangan Kabut, dan memanen Sambiloto."
+[node name="Sign02_PerbatasanHutan" parent="Signposts" instance=ExtResource("9_sign")]
+position = Vector2(1410, 2795)
+sign_title = "Papan Gerbang Koridor Hutan"
+short_label = "↑ Koridor Aman Jalan Utama
+Luar Jalan = Hutan Liar [Tab]"
+detail_text = "Jalan setapak utama lurus ke utara aman dilewati Tabib hingga Gerbang Stage 2 dan tidak bisa dimasuki hewan buas. Untuk masuk ke semak & landmark hutan di kiri/kanan jalan, tekan [Tab] mengutus Mpu Bahula!"
 
-[node name="Sign03_JembatanSelatan" parent="Signposts" instance=ExtResource("8_sign")]
-position = Vector2(2385, 1740)
-sign_title = "Papan Jembatan Kayu Selatan"
-short_label = "→ Seberangi Jembatan
-Pegagan & Meniran"
-detail_text = "Tepi lembap di seberang sungai ditumbuhi Pegagan dan Meniran alami, sementara sisi barat sungai kaya Temulawak dan Akar Alang-Alang."
+[node name="Sign03_SimpangHutanSelatan" parent="Signposts" instance=ExtResource("9_sign")]
+position = Vector2(1556, 2005)
+sign_title = "Papan Persimpangan Hutan Selatan"
+short_label = "↑ Hutan Dalam & Stage 2
+← Rumpun Bambu | Tepi Sungai →"
+detail_text = "BARAT (luar jalan): Rumpun Bambu Lebat (Jahe Merah, Daun Sirih, Kencur — dijaga Babi Hutan Liar). TIMUR (luar jalan): Tepi Sungai & 2 Jembatan Kayu (Temulawak, Pegagan, Meniran — dijaga Ular Berbisa). Tekan [Tab] untuk mengutus Mpu Bahula!"
 
-[node name="Sign04_HutanUtara" parent="Signposts" instance=ExtResource("8_sign")]
-position = Vector2(1475, 595)
-sign_title = "Papan Jalan Hutan Utara"
+[node name="Sign04_SimpangHutanUtara" parent="Signposts" instance=ExtResource("9_sign")]
+position = Vector2(1556, 935)
+sign_title = "Papan Persimpangan Hutan Dalam"
 short_label = "↑ Gerbang Stage 2
-← Sambiloto  |  Kecubung →"
-detail_text = "Lurus ke utara menuju Gerbang Stage 2 (Hutan Bambu & Sendang Girah) yang terbuka setelah seluruh 4 warga Desa Girah sembuh. Hati-hati terhadap 3 Bayangan Kabut dan tanaman Kecubung Gunung bertag TOKSIK!"
+← Reruntuhan | Sarang Babi →"
+detail_text = "BARAT (luar jalan): Reruntuhan Batu Tua (Sambiloto, Akar Alang-Alang, Melati — dijaga Ular Berbisa). TIMUR (luar jalan): Sarang Babi Hutan (Sambiloto, Kecubung [! TOKSIK], Serai — dijaga Babi Hutan Liar). Lurus utara: Gerbang Stage 2."
+
+[node name="Sign05_JembatanSungai" parent="Signposts" instance=ExtResource("9_sign")]
+position = Vector2(2320, 2170)
+sign_title = "Papan Jembatan Kayu Hutan"
+short_label = "→ Jembatan Kayu Selatan
+Pegagan & Meniran di Seberang"
+detail_text = "Seberangi jembatan kayu ini untuk memetik Meniran dan Pegagan di tepi timur sungai, atau naik ke utara menuju Sarang Babi Hutan. Waspadai Ular Berbisa yang lincah!"
 
 [node name="Patients" type="Node2D" parent="."]
 
 [node name="Patient01_Kartono" parent="Patients" instance=ExtResource("4_villager")]
-position = Vector2(690, 1320)
+position = Vector2(1380, 3540)
 patient_id = "patient_1"
 patient_name = "Pak Kartono"
 initial_symptoms = PackedStringArray("demam_panas", "mual_perut")
 
 [node name="Patient02_Sari" parent="Patients" instance=ExtResource("4_villager")]
-position = Vector2(1380, 1280)
+position = Vector2(690, 3340)
 patient_id = "patient_2"
 patient_name = "Mbok Sari"
 initial_symptoms = PackedStringArray("batuk_kabut", "luka_ruam")
 
 [node name="Patient03_Warni" parent="Patients" instance=ExtResource("4_villager")]
-position = Vector2(710, 1920)
+position = Vector2(710, 3940)
 patient_id = "patient_3"
 patient_name = "Nyi Warni"
 initial_symptoms = PackedStringArray("menggigil_beku", "bengkak_sendi")
 
 [node name="Patient04_Jaka" parent="Patients" instance=ExtResource("4_villager")]
-position = Vector2(2080, 1340)
+position = Vector2(2080, 3360)
 patient_id = "patient_4"
 patient_name = "Kang Jaka"
 initial_symptoms = PackedStringArray("demam_panas", "racun_darah", "igau_resah")
 
 [node name="Herbs" type="Node2D" parent="."]
 
-[node name="Herb01_Kunyit" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(340, 1250)
+[node name="Herb01_KunyitDesa" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(340, 3270)
 herb_id = "kunyit"
 harvest_amount = 2
-respawn_time = 20.0
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
 is_danger_zone = false
 
-[node name="Herb02_JaheMerah" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(950, 1240)
-herb_id = "jahe_merah"
-harvest_amount = 2
-respawn_time = 20.0
-is_danger_zone = false
-
-[node name="Herb03_Lengkuas" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(340, 1890)
-herb_id = "lengkuas"
-harvest_amount = 2
-respawn_time = 20.0
-is_danger_zone = false
-
-[node name="Herb04_Kencur" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(950, 1890)
-herb_id = "kencur"
-harvest_amount = 2
-respawn_time = 20.0
-is_danger_zone = false
-
-[node name="Herb05_DaunSirih" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(1760, 1250)
-herb_id = "daun_sirih"
-harvest_amount = 2
-respawn_time = 20.0
-is_danger_zone = false
-
-[node name="Herb06_SeraiWangi" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(1760, 1900)
-herb_id = "serai_wangi"
-harvest_amount = 2
-respawn_time = 20.0
-is_danger_zone = false
-
-[node name="Herb07_AsamJawa" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(2140, 1250)
+[node name="Herb02_AsamJawaDesa" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(1760, 3920)
 herb_id = "asam_jawa"
 harvest_amount = 2
-respawn_time = 20.0
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
 is_danger_zone = false
 
-[node name="Herb08_AkarAlangAlang" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(2355, 900)
-herb_id = "akar_alang_alang"
-harvest_amount = 2
-respawn_time = 20.0
-is_danger_zone = false
-
-[node name="Herb09_Meniran" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(2830, 1040)
-herb_id = "meniran"
-harvest_amount = 2
-respawn_time = 20.0
-is_danger_zone = false
-
-[node name="Herb10_Temulawak" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(2350, 1510)
+[node name="Herb03_TemulawakSungai" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(2260, 1460)
 herb_id = "temulawak"
 harvest_amount = 2
-respawn_time = 20.0
-is_danger_zone = false
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
+is_danger_zone = true
 
-[node name="Herb11_Pegagan" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(2850, 1680)
+[node name="Herb04_PegaganSungai" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(2830, 1560)
 herb_id = "pegagan"
 harvest_amount = 2
-respawn_time = 20.0
-is_danger_zone = false
-
-[node name="Herb12_SambilotoBarat" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(560, 240)
-herb_id = "sambiloto"
-harvest_amount = 2
-respawn_time = 22.0
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
 is_danger_zone = true
 
-[node name="Herb13_SambilotoUtara" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(1940, 250)
-herb_id = "sambiloto"
+[node name="Herb05_MeniranSungai" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(2840, 2140)
+herb_id = "meniran"
 harvest_amount = 2
-respawn_time = 22.0
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
 is_danger_zone = true
 
-[node name="Herb14_Kecubung" parent="Herbs" instance=ExtResource("5_herb")]
-position = Vector2(2580, 260)
+[node name="Herb06_JaheMerahBambu" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(380, 1660)
+herb_id = "jahe_merah"
+harvest_amount = 2
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
+is_danger_zone = true
+
+[node name="Herb07_DaunSirihBambu" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(940, 1690)
+herb_id = "daun_sirih"
+harvest_amount = 2
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
+is_danger_zone = true
+
+[node name="Herb08_KencurBambu" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(510, 2380)
+herb_id = "kencur"
+harvest_amount = 2
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
+is_danger_zone = true
+
+[node name="Herb09_AkarAlangReruntuhan" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(410, 430)
+herb_id = "akar_alang_alang"
+harvest_amount = 2
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
+is_danger_zone = true
+
+[node name="Herb10_SambilotoReruntuhan" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(820, 470)
+herb_id = "sambiloto"
+harvest_amount = 2
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
+is_danger_zone = true
+
+[node name="Herb11_MelatiReruntuhan" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(610, 860)
+herb_id = "bunga_melati"
+harvest_amount = 2
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
+is_danger_zone = true
+
+[node name="Herb12_SambilotoSarang" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(2450, 410)
+herb_id = "sambiloto"
+harvest_amount = 2
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
+is_danger_zone = true
+
+[node name="Herb13_KecubungSarang" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(2840, 470)
 herb_id = "biji_kecubung"
 harvest_amount = 2
-respawn_time = 22.0
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
+is_danger_zone = true
+
+[node name="Herb14_SeraiSarang" parent="Herbs" instance=ExtResource("5_herb")]
+position = Vector2(2180, 860)
+herb_id = "serai_wangi"
+harvest_amount = 2
+respawn_time = 90.0
+min_respawn_player_distance = 450.0
 is_danger_zone = true
 
 [node name="Enemies" type="Node2D" parent="."]
 
-[node name="Enemy01_BayanganBarat" parent="Enemies" instance=ExtResource("6_enemy")]
-position = Vector2(780, 385)
-enemy_name = "Bayangan Kabut Barat"
-max_hp = 35
-move_speed = 88.0
-danger_zone_max_y = 665.0
+[node name="Boar01_BambuUtara" parent="Enemies" instance=ExtResource("6_boar")]
+position = Vector2(590, 1790)
+enemy_name = "Babi Hutan Liar"
+max_hp = 50
+danger_zone_max_y = 2665.0
 
-[node name="Enemy02_BayanganTengah" parent="Enemies" instance=ExtResource("6_enemy")]
-position = Vector2(1600, 345)
-enemy_name = "Bayangan Kabut Tengah"
-max_hp = 35
-move_speed = 92.0
-danger_zone_max_y = 665.0
+[node name="Boar02_BambuSelatan" parent="Enemies" instance=ExtResource("6_boar")]
+position = Vector2(960, 2320)
+enemy_name = "Babi Hutan Liar"
+max_hp = 50
+danger_zone_max_y = 2665.0
 
-[node name="Enemy03_BayanganTimur" parent="Enemies" instance=ExtResource("6_enemy")]
-position = Vector2(2360, 395)
-enemy_name = "Bayangan Kabut Timur"
-max_hp = 35
-move_speed = 90.0
-danger_zone_max_y = 665.0
+[node name="Boar03_SarangBarat" parent="Enemies" instance=ExtResource("6_boar")]
+position = Vector2(2290, 560)
+enemy_name = "Babi Hutan Liar"
+max_hp = 55
+danger_zone_max_y = 2665.0
+
+[node name="Boar04_SarangTimur" parent="Enemies" instance=ExtResource("6_boar")]
+position = Vector2(2720, 720)
+enemy_name = "Babi Hutan Liar"
+max_hp = 55
+danger_zone_max_y = 2665.0
+
+[node name="Snake01_SungaiBarat" parent="Enemies" instance=ExtResource("7_snake")]
+position = Vector2(2200, 1840)
+enemy_name = "Ular Berbisa"
+max_hp = 28
+danger_zone_max_y = 2665.0
+
+[node name="Snake02_SungaiTimur" parent="Enemies" instance=ExtResource("7_snake")]
+position = Vector2(2780, 1820)
+enemy_name = "Ular Berbisa"
+max_hp = 28
+danger_zone_max_y = 2665.0
+
+[node name="Snake03_ReruntuhanUtara" parent="Enemies" instance=ExtResource("7_snake")]
+position = Vector2(550, 580)
+enemy_name = "Ular Berbisa"
+max_hp = 30
+danger_zone_max_y = 2665.0
+
+[node name="Snake04_ReruntuhanSelatan" parent="Enemies" instance=ExtResource("7_snake")]
+position = Vector2(960, 740)
+enemy_name = "Ular Berbisa"
+max_hp = 30
+danger_zone_max_y = 2665.0
 
 [node name="Entities" type="Node2D" parent="."]
 
 [node name="PlayerTabib" parent="Entities" instance=ExtResource("2_tabib")]
-position = Vector2(1600, 1660)
+position = Vector2(1600, 3680)
 
 [node name="PlayerBahula" parent="Entities" instance=ExtResource("3_bahula")]
-position = Vector2(1528, 1668)
+position = Vector2(1528, 3688)
 
-[node name="QuestPointer" parent="." instance=ExtResource("9_ptr")]
+[node name="QuestPointer" parent="." instance=ExtResource("10_ptr")]
 
-[node name="ProxyCamera2D" parent="." instance=ExtResource("10_cam")]
-position = Vector2(1600, 1660)
+[node name="ProxyCamera2D" parent="." instance=ExtResource("11_cam")]
+position = Vector2(1600, 3680)
 
-[node name="GameHUD" parent="." instance=ExtResource("11_hud")]
+[node name="GameHUD" parent="." instance=ExtResource("12_hud")]
 
-[node name="AlchemyTableUI" parent="." instance=ExtResource("12_alchemy_ui")]
+[node name="AlchemyTableUI" parent="." instance=ExtResource("13_alchemy_ui")]
 
-[node name="LontarUsadaUI" parent="." instance=ExtResource("13_lontar_ui")]
+[node name="LontarUsadaUI" parent="." instance=ExtResource("14_lontar_ui")]

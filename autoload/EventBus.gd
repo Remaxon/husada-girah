@@ -7,6 +7,8 @@ signal camera_switch_finished(target_character_id: int)
 
 signal herb_collected(herb_id: String, amount: int, is_first_discovery: bool)
 signal herb_inventory_changed()
+signal bahula_pouch_changed(total_count: int, pouch_dict: Dictionary)
+signal bahula_pouch_transferred(total_count: int, summary_text: String)
 signal ready_potions_changed()
 
 signal patient_diagnosed(patient_data: Dictionary)
