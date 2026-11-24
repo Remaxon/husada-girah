@@ -17,6 +17,7 @@ var _char_controls_label: Label
 var _bahula_hp_bar: ProgressBar
 var _bahula_hp_label: Label
 var _dash_status_label: Label
+var _bahula_pouch_label: Label
 
 var _plague_label: Label
 var _plague_bar: ProgressBar
@@ -69,6 +70,7 @@ func _connect_signals() -> void:
 	EventBus.plague_meter_updated.connect(_on_plague_updated)
 	EventBus.score_updated.connect(_on_score_updated)
 	EventBus.herb_inventory_changed.connect(_refresh_inventory)
+	EventBus.bahula_pouch_changed.connect(_on_bahula_pouch_changed)
 	EventBus.ready_potions_changed.connect(_refresh_potions)
 	EventBus.patient_diagnosed.connect(_on_patient_diagnosed)
 	EventBus.patient_cured.connect(_on_patient_cured)
@@ -96,6 +98,7 @@ func _refresh_all() -> void:
 	_on_plague_updated(GameManager.plague_meter, GameManager.is_plague_paused())
 	_on_score_updated(ScoreManager.total_score, 0, ScoreManager.current_streak, "")
 	_on_bahula_hp_changed(GameManager.bahula_hp, GameManager.bahula_max_hp)
+	_on_bahula_pouch_changed(GameManager.get_bahula_pouch_total(), GameManager.bahula_expedition_pouch)
 	_on_patient_cured("", GameManager.cured_patients, GameManager.total_patients)
 	_refresh_inventory()
 	_refresh_potions()
@@ -113,15 +116,15 @@ func _build_hud() -> void:
 	top_hbox.set_anchors_preset(Control.PRESET_TOP_WIDE)
 	top_hbox.offset_left = 12.0
 	top_hbox.offset_top = 8.0
-	top_hbox.offset_right = -208.0
-	top_hbox.offset_bottom = 90.0
+	top_hbox.offset_right = -192.0
+	top_hbox.offset_bottom = 102.0
 	top_hbox.add_theme_constant_override("separation", 10)
 	top_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(top_hbox)
 
-	# --- Kiri Atas: Karakter Aktif & HP Bahula ---
+	# --- Kiri Atas: Karakter Aktif, HP Bahula & Kantong Ekspedisi Bahula ---
 	_char_panel = PanelContainer.new()
-	_char_panel.custom_minimum_size = Vector2(360, 0)
+	_char_panel.custom_minimum_size = Vector2(395, 0)
 	top_hbox.add_child(_char_panel)
 
 	var char_vbox: VBoxContainer = VBoxContainer.new()
@@ -170,10 +173,16 @@ func _build_hud() -> void:
 	hp_hbox.add_child(_bahula_hp_bar)
 
 	_dash_status_label = Label.new()
-	_dash_status_label.text = "Dash: Siap"
+	_dash_status_label.text = "Shift: Sprint 1.5x"
 	_dash_status_label.add_theme_font_size_override("font_size", 11)
 	_dash_status_label.add_theme_color_override("font_color", Color(0.98, 0.88, 0.45))
 	hp_hbox.add_child(_dash_status_label)
+
+	_bahula_pouch_label = Label.new()
+	_bahula_pouch_label.text = "Kantong Bahula: 0 bahan"
+	_bahula_pouch_label.add_theme_font_size_override("font_size", 11)
+	_bahula_pouch_label.add_theme_color_override("font_color", Color(0.84, 0.94, 0.82))
+	char_vbox.add_child(_bahula_pouch_label)
 
 	# --- Tengah Atas: Wabah Meter & Pasien ---
 	var center_panel: PanelContainer = PanelContainer.new()
@@ -265,14 +274,14 @@ func _build_hud() -> void:
 	pause_btn.pressed.connect(func() -> void: pause_button_pressed.emit())
 	util_row.add_child(pause_btn)
 
-	# ===================== POJOK KANAN ATAS: MINIMAP RINGKAS =====================
+	# ===================== POJOK KANAN ATAS: MINIMAP RINGKAS (DESA + HUTAN 4x) =====================
 	var mini_panel: PanelContainer = PanelContainer.new()
 	mini_panel.anchor_left = 1.0
 	mini_panel.anchor_right = 1.0
-	mini_panel.offset_left = -198.0
+	mini_panel.offset_left = -182.0
 	mini_panel.offset_top = 8.0
 	mini_panel.offset_right = -10.0
-	mini_panel.offset_bottom = 172.0
+	mini_panel.offset_bottom = 242.0
 	mini_panel.add_theme_stylebox_override("panel", _make_box(Color(0.15, 0.1, 0.07, 0.94), Color(0.83, 0.63, 0.09), 2, 8))
 	root.add_child(mini_panel)
 
@@ -281,22 +290,22 @@ func _build_hud() -> void:
 	mini_panel.add_child(mini_vbox)
 
 	var mini_title: Label = Label.new()
-	mini_title.text = "PETA DESA GIRAH (U↑)"
+	mini_title.text = "PETA GIRAH & HUTAN (U↑)"
 	mini_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	mini_title.add_theme_font_size_override("font_size", 11)
+	mini_title.add_theme_font_size_override("font_size", 10)
 	mini_title.add_theme_color_override("font_color", Color(0.98, 0.88, 0.52))
 	mini_vbox.add_child(mini_title)
 
 	_minimap_control = MinimapControlScript.new()
-	_minimap_control.custom_minimum_size = Vector2(170, 118)
+	_minimap_control.custom_minimum_size = Vector2(152, 186)
 	_minimap_control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_minimap_control.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	mini_vbox.add_child(_minimap_control)
 
 	var mini_legend: Label = Label.new()
-	mini_legend.text = "H:Tabib  M:Bahula  K:Warga  ◆:Gate"
+	mini_legend.text = "Hijau:Herbal Merah:Buas Kuning:Warga"
 	mini_legend.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	mini_legend.add_theme_font_size_override("font_size", 9)
+	mini_legend.add_theme_font_size_override("font_size", 8)
 	mini_legend.add_theme_color_override("font_color", Color(0.88, 0.84, 0.72))
 	mini_vbox.add_child(mini_legend)
 
@@ -305,9 +314,9 @@ func _build_hud() -> void:
 	diag_panel.anchor_left = 1.0
 	diag_panel.anchor_right = 1.0
 	diag_panel.offset_left = -266.0
-	diag_panel.offset_top = 180.0
+	diag_panel.offset_top = 248.0
 	diag_panel.offset_right = -10.0
-	diag_panel.offset_bottom = 410.0
+	diag_panel.offset_bottom = 446.0
 	diag_panel.add_theme_stylebox_override("panel", _make_box(Color(0.16, 0.1, 0.07, 0.86), Color(0.68, 0.5, 0.22), 2, 8))
 	root.add_child(diag_panel)
 
@@ -589,12 +598,12 @@ func _build_end_overlay(parent: Control) -> void:
 func _on_character_changed(character_id: int) -> void:
 	if character_id == GameManager.ActiveCharacter.TABIB:
 		_char_panel.add_theme_stylebox_override("panel", _make_box(Color(0.14, 0.29, 0.17, 0.94), Color(0.42, 0.82, 0.48), 2, 8))
-		_char_name_label.text = "TABIB WIRA (Mode Penyembuh)"
-		_char_controls_label.text = "WASD: Gerak | E: Diagnosa/Panen | R: Kuali Racik | L: Lontar"
+		_char_name_label.text = "TABIB WIRA (Zona Aman • Desa)"
+		_char_controls_label.text = "WASD + Shift(Sprint) | E: Diagnosa | R: Kuali | L: Lontar"
 	else:
 		_char_panel.add_theme_stylebox_override("panel", _make_box(Color(0.36, 0.13, 0.11, 0.94), Color(0.92, 0.45, 0.28), 2, 8))
-		_char_name_label.text = "MPU BAHULA (Mode Lini Serang)"
-		_char_controls_label.text = "WASD: Gerak | Spasi: Tebas | Shift: Dash | E: Panen Kabut"
+		_char_name_label.text = "MPU BAHULA (Ekspedisi Hutan)"
+		_char_controls_label.text = "WASD + Shift(Sprint) | Spasi: Tebas | E: Petik Herbal Hutan"
 
 
 func _on_plague_updated(value: float, is_paused: bool) -> void:
@@ -635,10 +644,10 @@ func _on_dash_cd_updated(remaining: float, _duration: float) -> void:
 	if _dash_status_label == null:
 		return
 	if remaining <= 0.02:
-		_dash_status_label.text = "Dash: Siap"
+		_dash_status_label.text = "Shift: Sprint 1.5x"
 		_dash_status_label.add_theme_color_override("font_color", Color(0.98, 0.88, 0.45))
 	else:
-		_dash_status_label.text = "Dash: %.1fs" % remaining
+		_dash_status_label.text = "Dash(RMB): %.1fs" % remaining
 		_dash_status_label.add_theme_color_override("font_color", Color(0.8, 0.72, 0.65))
 
 
@@ -649,8 +658,19 @@ func _on_retreat_cd_updated(remaining: float) -> void:
 		_dash_status_label.text = "Pulih: %.0fs" % ceilf(remaining)
 		_dash_status_label.add_theme_color_override("font_color", Color(1.0, 0.48, 0.45))
 	else:
-		_dash_status_label.text = "Dash: Siap"
+		_dash_status_label.text = "Shift: Sprint 1.5x"
 		_dash_status_label.add_theme_color_override("font_color", Color(0.98, 0.88, 0.45))
+
+
+func _on_bahula_pouch_changed(total_count: int, _pouch_dict: Dictionary) -> void:
+	if _bahula_pouch_label == null:
+		return
+	if total_count > 0:
+		_bahula_pouch_label.text = "Kantong Bahula: %d bahan  (Kembali ke Desa/Tabib untuk setor!)" % total_count
+		_bahula_pouch_label.add_theme_color_override("font_color", Color(0.55, 1.0, 0.65))
+	else:
+		_bahula_pouch_label.text = "Kantong Bahula: 0 bahan"
+		_bahula_pouch_label.add_theme_color_override("font_color", Color(0.84, 0.82, 0.75))
 
 
 func _on_patient_diagnosed(_patient_data: Dictionary) -> void:

@@ -6,6 +6,6 @@
 limit_left = 0
 limit_top = 0
 limit_right = 3200
-limit_bottom = 2200
+limit_bottom = 4220
 limit_smoothed = true
 script = ExtResource("1_cam")
